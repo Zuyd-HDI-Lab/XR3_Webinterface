@@ -1,0 +1,102 @@
+<!-- Version: 18:33 29-10-2020 -->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>VR Research Reporter - Analyse</title>
+
+    <link href="https://fonts.googleapis.com/css?family=Inconsolata|Roboto:400,700&display=swap" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="/js/external/three.js"></script>
+    <script src="/js/main.js"></script>
+</head>
+
+<body>
+    <div id="research-info">
+        <div class="header-item">
+            <label class="box-text">Research:</label>
+            <label class="box-text" id="research">Dummytext</label>
+        </div>
+        <div class="header-item">
+            <label class="box-text">Researcher:</label>
+            <label class="box-text" id="researcher">Dummytext</label>
+        </div>
+        <div class="header-item">
+            <label class="box-text">Test-subject:</label>
+            <label class="box-text" id="test-subject">Dummytext</label>
+        </div>
+        <div class="header-item">            
+            <label class="box-text">ID:</label>
+            <label class="box-text" id="subject-id">Dummytext</label>
+        </div>
+    </div>
+    <div id="output_container">
+        <div id="video-panel">
+            <h1>Video</h1>
+            <!--DEBUGMODE Volume off-->
+            <video id="video-feed"><!--onloadstart="this.volume=0.0">-->
+                Your browser does not support HTML5 video.
+            </video>
+            <audio id="audio-feed">
+                <source id="audio-mp3-source" type="audio/mpeg" />
+                Your browser does not support HTML audio.
+            </audio>
+            <p id="video_time">0.00</p>
+            <p id="vid-timing"></p>
+        </div>
+
+        <div id="analyse-window">
+            <div id="minimap-parent">
+                <h1>Minimap</h1>
+                <div id="minimap-timing"></div>
+            </div>
+            <div id="question-parent">
+                <h1>Answers</h1>
+                <div id="question-timing"></div>
+                <div id="answer-timing"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="controlls_container">
+        <div id="button_panel">
+            <button class="btn_control" id="btn_replay" class="btn_control"></button>
+            <button class="btn_control" id="btn_skipback"> </button>
+            <button class="btn_control" id="btn_pause"></button>
+            <button class="btn_control" id="btn_forward"></button>
+            <button class="btn_control" id="btn_skipforward"></button>
+        </div>
+        <div id="slider_controls"></div>
+    </div>
+    <div class="clear-float"></div>
+</body>
+<script>
+    console.log("Main script started") 
+    // essential to the functioning of the timing sequencer
+    var run = function (timingProvider) {         
+        console.log("function 'run' started") 
+        const loadVideo = (object, source) => {
+            return new Promise((resolve, reject) => {
+
+                let sourceObject = document.createElement("source");
+                sourceObject.src = source;
+                sourceObject.id = "mp4_src";
+                sourceObject.type = "video/mp4";
+                object.append(sourceObject);
+
+                object.load();
+                object.onloadedmetadata = function () {                    
+                    resolve(object);
+                }
+            })
+        }
+    }
+    // Kick it all off
+    startSequencer(directory, urls);          
+</script>
