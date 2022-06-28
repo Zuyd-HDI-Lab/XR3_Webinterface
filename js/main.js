@@ -1,127 +1,183 @@
-         
+function initialise(){
+    concole.log("function initialise started");
+}
 
-            function startSequencer(directory, urls) {
-                console.log("function 'startSequencer' started") 
+let researchSession;
 
-                if(typeof directory === 'undefined' || typeof urls.video === 'undefined' || typeof urls.answers === 'undefined' || typeof urls.questions === 'undefined') {
-                    alert("Filename in urls object or directory is undefined. directory is undefined: " + typeof directory === 'undefined' + ", video is undefined: " + typeof urls.video === 'undefined' + ", answers is undefined: " + typeof urls.answers === 'undefined' + ", questions is undefined: " + typeof urls.questions === 'undefined');
-                    return;
-                }
+// essential to the functioning of the timing sequencer
+var run = function () {   
+    const loadVideo = (object, source) => { return new Promise((resolve, reject) => {
+        let sourceObject = document.createElement("source");
+        sourceObject.src = source;
+        sourceObject.id = "mp4_src";
+        sourceObject.type = "video/mp4";
+        object.append(sourceObject);
 
-                // Load data and video files
-                d3.json(directory + urls.answers).then(function (answerData) {
-
-                    d3.json(directory + urls.questions).then(function (questionData) {
-
-                        loadVideo(document.getElementById("myVideo"), directory + urls.video).then(video => {
-
-                            // Create new master sequencer object
-                            let sequencer = new MasterSequencer(video, 0, timingProvider);
-
-                            // Sort and set answers
-                            let sortedAnswers = answerData.answers.slice().sort((a, b) => d3.ascending(a.questionAskTime, b.questionAskTime));
-                            sequencer.setAnswers(sortedAnswers);
-
-                            // Index questions
-                            let indexedQuestions = {};
-                            questionData["QuestionBlocks"].forEach(function (outer) {
-                                outer["Questions"].forEach(function (inner) {
-                                    thisObject = inner;
-                                    thisObject["BlockSubTitle"] = outer["SubTitle"]
-                                    thisObject["BlockQuestion"] = outer["BlockQuestion"]
-                                    indexedQuestions[inner["question"]] = thisObject;
-                                })
-                            });
-                            // Attach correct answers
-                            sequencer.answers.forEach(function (answer) {
-                                if (typeof indexedQuestions[answer.question] !== 'undefined') {
-                                    let matchingQuestion = indexedQuestions[answer.question];
-                                    matchingQuestion.correctAnswer = answer.answer;
-                                    //console.log(matchingQuestion);
-                                }
-
-                            });
-                            // Setup questions
-                            sequencer.setQuestions(indexedQuestions);
-
-                            // Setup question sequence
-                            sequencer.questionSequence();
-
-                            // Setup answer sequence
-                            sequencer.answerSequence();
-
-                            // Setup info header
-                            let info = { subjectId: answerData.subjectID, researchID: answerData.researchID, dateTime: answerData.dateTime, subject: answerData.subject, researcher: answerData.researcher }
-                            sequencer.setupHeader(info);
-
-                            // Setup slider
-                            sequencer.slider(8, 4);
-
-                            // Setup controls
-                            sequencer.setupButtons(sequencer.sequence);  
-
-                            // Finish by calling timeUpdate once
-                            sequencer.timeUpdate();
-                            //console.log(sequencer.questions);
-
-                            if(typeof urls.logs === 'undefined') {
-                                alert("logs is undefined: " + typeof urls.logs === 'undefined' + ", press ok to continue without logs.");
-                            } else {
-                                // Load logs data
-                                d3.json(directory + urls.logs).then(function (logData) {
-
-                                    // Setup logs
-                                    sequencer.setLogs(logData);
-                                    
-                                    // Setup log sequence
-                                    sequencer.logSequence();
-
-                                    // Init logs
-                                    // startLogs(sequencer.logs[0]["TransformList"], sequencer.logBox);
-
-                                    // let logHandler = new LogHandler(sequencer.logBox);
-                                    // logHandler.init();
-                                    // animate();
-                                    // console.log(sequencer.logs)
-                                    // logHandler.setupMeshes(sequencer.logs[0]["TransformList"]);
-                                    // logHandler.animate(logHandler);
-                                    // function animate() {
-                                    //     requestAnimationFrame( animate );
-                                    //     logHandler.render();
-
-                                    // }
-
-                                    if( !init(sequencer.logBox) )	animate();
-                                    setupMeshes(sequencer.logs[0]["TransformList"])                                   
+        object.load();
+        object.onloadedmetadata = function () {
+            resolve(object);
+        }
+    });}
     
+    // Kick it all off
+    startResearchReporter(directory, urls);            
 
-                                }).catch(function (error) {
-                                    // alert("Failed to load log data, see console");
-                                    console.log(error);
-                                });
-                            }
+    function startResearchReporter(directory, urls) {
+        if(typeof directory === 'undefined' || typeof urls.video === 'undefined'){ // || typeof urls.answers === 'undefined' || typeof urls.questions === 'undefined') {
+            alert("Filename in urls object or directory is undefined."); //directory is undefined: " + typeof directory === 'undefined' + ", video is undefined: " + typeof urls.video === 'undefined' + ", answers is undefined: " + typeof urls.answers === 'undefined' + ", questions is undefined: " + typeof urls.questions === 'undefined');
+            return;
+        }
 
-                        });
+        // Load data and video files
+        d3.json(directory + urls.answers).then(function (answerData) { 
+        d3.json(directory + urls.questions).then(function (questionData) {
+                
+            loadVideo(document.getElementById("video-feed"), getVideoPath(directory, urls)).then(video => {
+                // Create new researchsession object
+                researchSession = new ResearchSession(video, 0, questionData, answerData);
+                setupButtons();
+                setupHeader(answerData);
+                setupSlider(researchSession, 8, 4);                
 
-                    }).catch(function (error) {
-                        alert("Failed to load question data, see console");
-                        console.log(error);
-                    });
+                // Finish by calling timeUpdate once
+                researchSession.timeUpdate();                
+            });
+              
+        }).catch(function (error) {
+            alert("Failed to load question data, see console");
+            console.log(error);
+        });    
+        }).catch(function (error) {
+            alert("Failed to load answer data, see console")
+            console.log(error);
+        });        
+    }
+            
+    //First version of getting correct path to video.
+    //Change if directory is saved by participant ID
+    function getVideoPath(directory, urls)
+    {
+        if(typeof directory === 'undefined' || typeof urls.video === 'undefined'){ // || typeof urls.answers === 'undefined' || typeof urls.questions === 'undefined') {
+            alert("Can't find video. Filename in urls object or directory is undefined.");
+            return;
+        }
+        return directory + urls.video;
+    }
 
-                }).catch(function (error) {
-                    alert("Failed to load answer data, see console")
-                    console.log(error);
-                });
+    //Add the onClick event with specific actions according to button_id
+    function setupButtons() {    
+        var buttonsElem = document.getElementsByClassName("btn_control");
+        for(var i = 0; i < buttonsElem.length; i++) {
+            researchSession.addClickEvent(buttonsElem[i]);
+        }
+    }
 
+    function setupHeader(infoData) {
+        if (infoData.researchID !== 'undefined') {
+            document.getElementById("research").innerHTML = infoData.researchID;
+        }
+        if (infoData.researcher !== 'undefined') {
+            document.getElementById("researcher").innerHTML = infoData.researcher;
+        }
+        document.getElementById("test-subject").innerHTML = "Anonymous";
+        if (infoData.subject !== 'undefined') {
+            document.getElementById("test-subject").innerHTML = infoData.subject;
+        }
+        if (infoData.subjectID !== 'undefined') {
+            document.getElementById("subject-id").innerHTML = infoData.subjectID;
+        }
+    }
+
+    function setupSlider(researchSession, r, m){
+        //console.log(researchSession.sliderBox.node())
+        let windowWidth = 680;//parseInt(getComputedStyle(researchSession.sliderBox.node()).width, 10)
+        let x = d3.scaleLinear()
+            .range([0, windowWidth, 10])    
+            .domain([0, researchSession.timingObject._range[1]]);
+        
+        let margin = { top: r * 2 + m };
+        
+        var div = d3.select("body").append("div")
+            .attr("class", "tooltip")
+            .style("opacity", 0);
+
+        let sliderContainer = d3.select("#slider_controls");
+        
+        let divSlider = sliderContainer.append("div")
+            .attr("id", "slider-div")
+            .style("position", "relative")
+            .style("display", "block")
+            .style("top", margin.top)
+            .style("left", 0)
+            //.style("width", x.range()[1] + "px");
+            .style("width", "680px");
+
+        let navCircles = sliderContainer.append("div")
+            .style("position", "relative")
+            .attr("id", "question-marker-parent")
+            .selectAll("div.question-marker")
+            .data(researchSession.questionSequence.getCues())
+            .enter()
+            .append("div")
+            .attr("class", "question-marker")
+            .style("position", "absolute")
+            .style("display", "block")
+            .style("left", function (d) {
+                return (x(d.interval.low) - 9) + "px";
+            })
+            .attr("id", function (d) { return "t_" + d.key.replace('.', 'p'); })
+            .attr("time", function (d) { return d.key; })
+            .on("mouseover", function (d, i) {
+                if (!d3.select(this).classed("circle-hover")) {
+                    d3.select(this).classed("circle-hover", true)
+                }
+                div.transition()
+                    .duration(200)
+                    .style("opacity", .9)
+                    .style("left", (d.pageX) + "px")
+                    .style("top", (d.pageY - 28) + "px");
+            })
+            .on("mouseout", function (d) {
+                d3.select(this).classed("circle-hover", false)
+                div.transition()
+                    .duration(100)
+                    .style("opacity", 0);
+            })
+            .on("click", function (d, i) {
+                //console.log("clicked: ", parseFloat(i.key));
+                researchSession.timingObject.update({ position: parseFloat(i.key) });
+            });
+
+        let sliderProgress = divSlider.append("div")
+            .attr("id", "slider-progress")
+            .style("position", "relative")
+            .style("display", "block")
+            .on("mouseover", function (d) {
+                if (!d3.select(this).classed("progress-hover")) {
+                    d3.select(this).classed("progress-hover", true)
+                }
+            })
+            .on("mouseout", function (d) {
+                d3.select(this).classed("progress-hover", false)
+            });
+
+        this.sliderProgress = sliderProgress;
+        this.x = x;
+
+        divSlider.on("mouseover", function (d) {
+            if (!d3.select(this).classed("slider-hover")) {
+                d3.select(this).classed("slider-hover", true)
             }
-
-            // Directory and file location information
-            let directory = "/data/"
-            let urls = {
-                "video": "[14.13654]SonificationResearch2_2021-01-20_18-51-09_2468x2740.mp4",
-                "answers": "20210120SonificationResearch2.json",
-                "questions": "SonificationQuestionnaire.json",
-                "logs": "SonificationResearch2log.json"
-            };
-
-
+            if (!d3.select("#slider-progress").classed("progress-hover")) {
+                d3.select("#slider-progress").classed("progress-hover", true)
+            }
+        })
+        .on("mouseout", function (d) {
+            d3.select("#slider-progress").classed("progress-hover", false)
+        })
+        .on("click", function (d) {
+            researchSession.timingObject.update({ position: x.invert(d.pageX - d3.select(this).node().getBoundingClientRect().x) });
+        });    
+    }
+//End run-function
+}

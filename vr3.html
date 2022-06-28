@@ -13,8 +13,19 @@
     <link href="css/style.css" rel="stylesheet">
 
     <script src="https://d3js.org/d3.v7.min.js"></script>
-    <script src="/js/external/three.js"></script>
+    <!--<script src="/js/external/three.js"></script>-->
+    <!--<script text="javascript" src="https://mcorp.no/lib/mediasync.js"></script>-->
+    <script src="/js/external/mediasync.js"></script>
+    <script src="/js/external/timingsrc-v2.js"></script>
+    <script src="/js/researchsession.js"></script>
+    <script src="/js/questionhandler.js"></script>
     <script src="/js/main.js"></script>
+
+    <script type="text/javascript">
+        //Start the 'run' function
+        if (document.readyState === "complete") run();
+        else window.onload = function () { run(); };
+    </script>
 </head>
 
 <body>
@@ -28,7 +39,7 @@
             <label class="box-text" id="researcher">Dummytext</label>
         </div>
         <div class="header-item">
-            <label class="box-text">Test-subject:</label>
+            <label class="box-text">Participant:</label>
             <label class="box-text" id="test-subject">Dummytext</label>
         </div>
         <div class="header-item">            
@@ -66,37 +77,28 @@
 
     <div id="controlls_container">
         <div id="button_panel">
-            <button class="btn_control" id="btn_replay" class="btn_control"></button>
-            <button class="btn_control" id="btn_skipback"> </button>
+            <button class="btn_control" id="btn_replay"></button>
+            <button class="btn_control" id="btn_previouscue"> </button>
             <button class="btn_control" id="btn_pause"></button>
-            <button class="btn_control" id="btn_forward"></button>
-            <button class="btn_control" id="btn_skipforward"></button>
+            <button class="btn_control" id="btn_play"></button>
+            <button class="btn_control" id="btn_nextcue"></button>
         </div>
         <div id="slider_controls"></div>
     </div>
     <div class="clear-float"></div>
+
+    <script>
+        //TODO: Change to actual loading video
+        // Directory and file location information
+        let directory = "/data/"
+        let urls = {
+            "video": "[14.13654]SonificationResearch2_2021-01-20_18-51-09_2468x2740.mp4",
+            "answers": "20210120SonificationResearch2.json",
+            "questions": "SonificationQuestionnaire.json",
+            "logs": "SonificationResearch2log.json"
+        };
+
+        console.log("Main script started"); 
+
+    </script>
 </body>
-<script>
-    console.log("Main script started") 
-    // essential to the functioning of the timing sequencer
-    var run = function (timingProvider) {         
-        console.log("function 'run' started") 
-        const loadVideo = (object, source) => {
-            return new Promise((resolve, reject) => {
-
-                let sourceObject = document.createElement("source");
-                sourceObject.src = source;
-                sourceObject.id = "mp4_src";
-                sourceObject.type = "video/mp4";
-                object.append(sourceObject);
-
-                object.load();
-                object.onloadedmetadata = function () {                    
-                    resolve(object);
-                }
-            })
-        }
-    }
-    // Kick it all off
-    startSequencer(directory, urls);          
-</script>
