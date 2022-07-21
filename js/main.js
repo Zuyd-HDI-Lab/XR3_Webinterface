@@ -116,7 +116,7 @@ var run = function () {
             .style("position", "relative")
             .attr("id", "question-marker-parent")
             .selectAll("div.question-marker")
-            .data(researchSession.questionSequence.getCues())
+            .data(researchSession.answerSequence.getCues())
             .enter()
             .append("div")
             .attr("class", "question-marker")
