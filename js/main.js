@@ -31,18 +31,24 @@ var run = function () {
         // Load data and video files
         d3.json(directory + urls.answers).then(function (answerData) { 
         d3.json(directory + urls.questions).then(function (questionData) {
-                
+        d3.csv(directory + urls.participant_details).then(function(part_details){
+  
             loadVideo(document.getElementById("video-feed"), getVideoPath(directory, urls)).then(video => {
+                var delay = part_details[0]["startTimeOfsset"];//7.701528; //TODO: Nu vaste waarde voor 'Complete Run', ophalen uit log
                 // Create new researchsession object
-                researchSession = new ResearchSession(video, 0, questionData, answerData);
-                setupButtons();
                 setupHeader(answerData);
+                researchSession = new ResearchSession(video, delay, questionData, answerData);
+                setupButtons();                
                 setupSlider(researchSession, 8, 4);                
 
                 // Finish by calling timeUpdate once
                 researchSession.timeUpdate();                
             });
-              
+
+        }).catch(function (error) {
+            alert("Failed to load perticipant details, see console");
+            console.log(error);
+        });
         }).catch(function (error) {
             alert("Failed to load question data, see console");
             console.log(error);
@@ -68,8 +74,48 @@ var run = function () {
     function setupButtons() {    
         var buttonsElem = document.getElementsByClassName("btn_control");
         for(var i = 0; i < buttonsElem.length; i++) {
-            researchSession.addClickEvent(buttonsElem[i]);
+            /*researchSession.*/addClickEvent(buttonsElem[i]);
         }
+    }
+
+    //Add the onClick event with specific actions according to button_id
+    function addClickEvent(elem){
+        var rs = researchSession;
+        elem.onclick = function (e) {
+            if (elem.id === "btn_replay") {
+                rs.timingObject.update({ position: 0.0 });
+                rs.updateCircleStates(rs.timingObject._range[0])            
+            }
+            else if (elem.id === "btn_previouscue") {
+                var nearestCue = rs.getNearestCue("left")
+                if (nearestCue !== undefined){
+                    rs.timingObject.update({ position: parseFloat(nearestCue.key) });
+                }
+                else{
+                    //No previous cue found, go to start
+                    rs.timingObject.update({ position: 0.0 });
+                    rs.updateCircleStates(rs.timingObject._range[0])
+                }                
+            }
+            else if (elem.id === "btn_pause") {
+                rs.timingObject.update({ velocity: 0.0 });
+            } 
+            else if (elem.id === "btn_play") {
+                var v = rs.timingObject.query();
+                if (v.position === 100 && v.velocity === 0) {
+                    rs.timingObject.update({ position: 0.0, velocity: 1.0 });
+                } else rs.timingObject.update({ velocity: 1.0 });
+            }
+            else if (elem.id === "btn_nextcue") {
+                var nearestCue = rs.getNearestCue("right");
+                if (nearestCue !== undefined) rs.timingObject.update({ position: parseFloat(nearestCue.key) });
+                //else: No next cue found
+            }
+            else if (elem.id === "btn_toend") { //btn not implemented?
+                rs.timingObject.update({ position: rs.timingObject._range[1] });
+                rs.updateCircleStates(rs.timingObject._range[1])
+            }
+        }          
     }
 
     function setupHeader(infoData) {
@@ -90,7 +136,9 @@ var run = function () {
 
     function setupSlider(researchSession, r, m){
         //console.log(researchSession.sliderBox.node())
-        let windowWidth = 680;//parseInt(getComputedStyle(researchSession.sliderBox.node()).width, 10)
+        var sliderBox = d3.select("#slider_controls");
+        let windowWidth = 680;//parseInt(getComputedStyle(sliderBox.node()).width, 10)
+
         let x = d3.scaleLinear()
             .range([0, windowWidth, 10])    
             .domain([0, researchSession.timingObject._range[1]]);
@@ -109,8 +157,8 @@ var run = function () {
             .style("display", "block")
             .style("top", margin.top)
             .style("left", 0)
-            //.style("width", x.range()[1] + "px");
-            .style("width", "680px");
+            .style("width", x.range()[1] + "px");
+            //.style("width", "680px");
 
         let navCircles = sliderContainer.append("div")
             .style("position", "relative")
@@ -134,6 +182,7 @@ var run = function () {
                 div.transition()
                     .duration(200)
                     .style("opacity", .9)
+                div.html(i.data.question)                    
                     .style("left", (d.pageX) + "px")
                     .style("top", (d.pageY - 28) + "px");
             })
@@ -160,9 +209,9 @@ var run = function () {
             .on("mouseout", function (d) {
                 d3.select(this).classed("progress-hover", false)
             });
-
-        this.sliderProgress = sliderProgress;
-        this.x = x;
+        
+        researchSession.sliderProgress = sliderProgress;
+        researchSession.x = x;
 
         divSlider.on("mouseover", function (d) {
             if (!d3.select(this).classed("slider-hover")) {

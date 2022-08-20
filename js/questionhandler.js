@@ -14,13 +14,12 @@ class Questionnaire{
         }
         
         //List of answerdata
-        //Old vs New check
-        if (typeof rawAnswerData.answerList === 'undefined')
-            console.log("New answerlist NOT found");
-        else {
-            console.log("New answerlist found")
-            this.answerObjects = this.createAnswerList(rawAnswerData.answerList);
-        }
+//        if (typeof rawAnswerData.answerList === 'undefined')
+//            console.log("New answerlist NOT found");
+//        else {
+            console.log("Answerlist found")
+            this.answerObjects = this.createAnswerList(rawAnswerData);
+//       }
     }
 
     //Extract questionData based on VR_Questionaire data input
@@ -45,17 +44,15 @@ class Questionnaire{
         return answers;
     }
 
-    createCues(answerSequence){
+    createCues(answerSequence, delay){
         if (this.answerObjects === undefined){
             console.log("AnswerObjects not loaded");
             return undefined;
         }
         //Go through every timestamp in the answers
         this.answerObjects.forEach(element => {
-            var cueStartTime = parseFloat(element.startTime);
-            var cueEndTime = parseFloat(element.endTime);
-            //console.log(cueStartTime, parseFloat(cueStartTime).toString());
-            //console.log(cueEndTime, parseFloat(cueStartTime).toString());
+            var cueStartTime = parseFloat(element.startTime - delay);
+            var cueEndTime = parseFloat(element.endTime - delay);
             var interval = new TIMINGSRC.Interval(cueStartTime, cueEndTime);
             //Check if the time is already included -> Multiple questionspage
             if (answerSequence.hasCue(parseFloat(cueStartTime).toString())){
@@ -143,6 +140,7 @@ class AnwserData{
             answerText = this.questionText +"</br>";
             answerText += this.pageObject.questions[this.questionId].qOptions[this.answer];
             break;
+        case "likert":
         case "radioGrid": 
             for (var key in this.pageObject.qConditions){
                 if (this.pageObject.qConditions[key].qId === this.cId){                    
@@ -185,12 +183,9 @@ class AnwserData{
 
     showQuestionAnswers(cueAnswers){
         var answerString = "";
- 
+        console.log(this.questionType);
         switch(this.questionType){
         case "task":
-            //Task screen, do not show in answerBox
-            console.log(this);
-            console.log(cueAnswers);
             answerString = this.questionText + "</br><br>";
             answerString += this.pageObject.qInstructions;
             break;
@@ -204,7 +199,9 @@ class AnwserData{
                 answerString += cueAnswers[key].getSingleAnswer() +"</br></br>";
             }
             break;
+        case "likert":
         case "radioGrid":
+            console.log(this)
             answerString = this.pageObject.questions[this.questionId].qText +"</br></br>";
             for (var key in cueAnswers){
                 answerString += cueAnswers[key].getSingleAnswer() +"</br></br>";
