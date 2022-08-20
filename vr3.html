@@ -20,6 +20,7 @@
     <script src="/js/researchsession.js"></script>
     <script src="/js/questionhandler.js"></script>
     <script src="/js/main.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
 
     <script type="text/javascript">
         //Start the 'run' function
@@ -90,13 +91,14 @@
     <script>
         //TODO: Change to actual loading video
         // Directory and file location information
-        var participantId = "2";
+        var participantId = "Complete run";
         let directory = "/data/"+participantId+"/";
         let urls = {
             "video": "Participant View.mp4",
-            "answers": "QuestionnairequestionnaireID_SoniTest_participantID_id2_condition_AB_answers.json",
+            "answers": "Questionnaire/questionnaireID_Soni_participantID_id2_condition_AB_answers.json",
             "questions": "Questionnaire/sonification.json",
-            "logs": "Minimap/2202-07-18-12-36-10.json"
+            "logs": "Minimap/2202-07-18-12-36-10.json",
+            "participant_details": "S001/session_info/participant_details.csv"
         };
 
         console.log("Main script started"); 
