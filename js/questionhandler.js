@@ -1,25 +1,17 @@
 class Questionnaire{
     constructor(rawQuestionData, rawAnswerData) {
         console.log("Questionnaire created");
-        //this.rawAnswerData = rawAnswerData;
-        //console.log(rawAnswerData);
 
         //List of questions
-        //Old vs New check
         if (typeof rawQuestionData.questions === 'undefined')
             console.log("New questionlist NOT found");
         else {
-            console.log("New questionlist found")
+            console.log("Questionlist found")
             this.questionObjects = this.createQuestionList(rawQuestionData.questions);
         }
         
-        //List of answerdata
-//        if (typeof rawAnswerData.answerList === 'undefined')
-//            console.log("New answerlist NOT found");
-//        else {
-            console.log("Answerlist found")
-            this.answerObjects = this.createAnswerList(rawAnswerData);
-//       }
+        console.log("Answerlist found")
+        this.answerObjects = this.createAnswerList(rawAnswerData);
     }
 
     //Extract questionData based on VR_Questionaire data input
@@ -35,6 +27,7 @@ class Questionnaire{
 
     //Extract questionData based on VR_Questionaire data input
     createAnswerList(answerData){
+        console.log(answerData)
         //List of questions
         var answers = []
         answerData.forEach(element => {           
@@ -65,6 +58,7 @@ class Questionnaire{
                 answerSequence.addCue(parseFloat(cueStartTime).toString(), interval, [element]);
             }
         })
+        console.log(answerSequence);
         return answerSequence;
     }
 }
@@ -140,20 +134,37 @@ class AnwserData{
             answerText = this.questionText +"</br>";
             answerText += this.pageObject.questions[this.questionId].qOptions[this.answer];
             break;
-        case "likert":
         case "radioGrid": 
             for (var key in this.pageObject.qConditions){
                 if (this.pageObject.qConditions[key].qId === this.cId){                    
                     answerText = this.pageObject.qConditions[key].qText +"</br>";
-                    answerText += this.pageObject.qOptions[this.answer];
+                    answerText += this.pageObject.qOptions[parseInt(this.answer)];
                 }
-            }            
+            }     
             break;
         case "checkbox":           
             answerText = "<tr><td>";
             if (this.answer === "1") answerText += "X   ";
             answerText += "</td><td>"+this.cId+"</td></tr>";
-            break;
+            break; 
+        case "likert":
+            answerText += "<table width='80%'>";
+            var optionText = "<tr>";
+            var answermark = "<tr>";
+            var width = 80/this.pageObject.qOptions.length;
+            for (var i in this.pageObject.qOptions) {
+                optionText += "<td>|</td><td align='center' width='"+width+"%'>"+this.pageObject.qOptions[i]+"</td>";
+                answermark += "<td>|</td><td align='center' width='"+width+"%'>";
+                if (i == parseInt(this.answer)){
+                    answermark += " X ";
+                }
+                else answermark += "  ";
+                answermark += "</td>";
+            }
+            optionText += "<td>|</td></tr>";
+            answermark += "<td>|</td></tr>";
+            answerText += optionText + answermark + "</table></br>";
+            break;                                    
         case "linearSlider":
         case "linearGrid": 
             answerText = this.questionText +"</br>"; 
@@ -164,7 +175,7 @@ class AnwserData{
             for (var i = min; i < max; i++) {
                 answerText += "<td>";
                 if (i == parseInt(this.answer)){
-                    answerText += " X ";
+                    answerText += this.answer;
                 }
                 else answerText += " - ";
                 answerText += "</td>";
@@ -183,25 +194,34 @@ class AnwserData{
 
     showQuestionAnswers(cueAnswers){
         var answerString = "";
-        console.log(this.questionType);
+        console.log(this.questionType, cueAnswers);
         switch(this.questionType){
         case "task":
-            answerString = this.questionText + "</br><br>";
-            answerString += this.pageObject.qInstructions;
+            answerString = this.pageObject.qInstructions + "</br><br>"; 
+            answerString += this.questionText;           
             break;
         case "numericInput":
-            answerString = this.questionText +"</br></br>"+ this.answer;
+            answerString = this.questionText +"</br>"+ this.answer;
             break;
         case "radio":
         case "dropdown":
-            answerString = this.pageObject.qInstructions +"</br><br>";
+            answerString = "";
             for (var key in cueAnswers){
                 answerString += cueAnswers[key].getSingleAnswer() +"</br></br>";
             }
             break;
         case "likert":
+            answerString = this.questionText +"</br>"; 
+            for (var key in this.pageObject.qConditions){
+                if (this.pageObject.qConditions[key].qId === this.cId){                    
+                    answerString += this.pageObject.qConditions[key].qText +"</br></br>";
+                }
+            } 
+            for (var key in cueAnswers){
+                answerString += cueAnswers[key].getSingleAnswer();
+            }
+            break;
         case "radioGrid":
-            console.log(this)
             answerString = this.pageObject.questions[this.questionId].qText +"</br></br>";
             for (var key in cueAnswers){
                 answerString += cueAnswers[key].getSingleAnswer() +"</br></br>";

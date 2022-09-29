@@ -1,6 +1,6 @@
 class ResearchSession {
     
-    constructor(video, delay, rawQuestionData, rawAnswerData) {
+    constructor(video, delay, rawQuestionData, rawAnswerData, minimapData, trial_results) {
         //Video-feed
         this.video = video;
         this.delay = delay;
@@ -15,9 +15,14 @@ class ResearchSession {
         this.questionaire = new Questionnaire(rawQuestionData, rawAnswerData);
         this.questionSequence;
         this.answerSequence;
-        this.createCues();
+        this.createAnswerCues();
 
-        //Minimap data
+        this.trial_results = trial_results;
+        //Minimap data        
+        this.minimapBox = d3.select("#minimap-timing");
+        this.minimapPlotter = new MinimapPlotter(minimapData, this.minimapBox, trial_results);
+
+        this.createMinimapCues();
 
         //Connection to html-elements
         this.timeBox = document.getElementById("video_time");
@@ -30,23 +35,44 @@ class ResearchSession {
 
     //Update the timer and set slider to start if time is 0.00
     timeUpdate() {
-        var self = this;
-        self.timingObject.on("timeupdate", function () {
-            self.timeSec = self.timingObject.query().position.toFixed(2);
-            self.timeBox.innerHTML = self.timeSec;
+        var rs = this
+        rs.timingObject.on("timeupdate", function () {
+            rs.timeSec = rs.timingObject.query().position.toFixed(2);
+            rs.timeBox.innerHTML = rs.timeSec;
 
-            if (self.timeSec == "0.00") {
-                self.sliderProgress.style("width", 0);
+            if (rs.timeSec == "0.00") {
+                rs.sliderProgress.style("width", 0);
             } else {
-                self.sliderProgress.style("width", self.x(self.timeSec) + "px");
+                rs.sliderProgress.style("width", rs.x(rs.timeSec) + "px");
             }
         });
     }
 
-    createCues(){
+    createMinimapCues(){        
+        let self = this;
+        let minimapSequence = new TIMINGSRC.Sequencer(this.timingObject);
+        minimapSequence = this.minimapPlotter.createCues(minimapSequence, this.delay, this.video.duration);
+        
+        minimapSequence.on("change", function (e) {
+            var currentCue = minimapSequence.getCue(e.key);
+            //console.log(currentCue.data);
+            self.minimapPlotter.plotObjects(currentCue.data);
+
+            //self.questionBox.innerHTML = currentCue.data[0].showQuestionAnswers(currentCue.data);
+            //self.updateCircleStates(answerSequence.getCue(e.key));
+        });
+        minimapSequence.on("remove", function (e) {
+            //console.log("MinimapSequence Remove")
+            //self.questionBox.innerHTML = "";
+        });
+
+        this.minimapSequence = minimapSequence;
+    }
+
+    createAnswerCues(){
         let self = this;
         let answerSequence = new TIMINGSRC.Sequencer(this.timingObject);
-        answerSequence = this.questionaire.createCues(answerSequence, self.delay);
+        answerSequence = this.questionaire.createCues(answerSequence, this.delay);
         
         answerSequence.on("change", function (e) {
             var currentCue = answerSequence.getCue(e.key);

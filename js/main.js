@@ -20,7 +20,7 @@ var run = function () {
     });}
     
     // Kick it all off
-    startResearchReporter(directory, urls);            
+    startResearchReporter(directory, urls);    
 
     function startResearchReporter(directory, urls) {
         if(typeof directory === 'undefined' || typeof urls.video === 'undefined'){ // || typeof urls.answers === 'undefined' || typeof urls.questions === 'undefined') {
@@ -30,23 +30,33 @@ var run = function () {
 
         // Load data and video files
         d3.json(directory + urls.answers).then(function (answerData) { 
+        //d3.csv(directory + urls.answers).then(function (answerData) { 
         d3.json(directory + urls.questions).then(function (questionData) {
+        d3.json(directory + urls.logs).then(function (minimapData) {
         d3.csv(directory + urls.participant_details).then(function(part_details){
-  
-            loadVideo(document.getElementById("video-feed"), getVideoPath(directory, urls)).then(video => {
+        d3.csv(directory + urls.trial_results).then(function(trial_results){
+
+              loadVideo(document.getElementById("video-feed"), getVideoPath(directory, urls)).then(video => {
                 var delay = part_details[0]["startTimeOfsset"];//7.701528; //TODO: Nu vaste waarde voor 'Complete Run', ophalen uit log
                 // Create new researchsession object
                 setupHeader(answerData);
-                researchSession = new ResearchSession(video, delay, questionData, answerData);
+                researchSession = new ResearchSession(video, delay, questionData, answerData, minimapData, trial_results);
                 setupButtons();                
                 setupSlider(researchSession, 8, 4);                
 
                 // Finish by calling timeUpdate once
                 researchSession.timeUpdate();                
             });
-
         }).catch(function (error) {
-            alert("Failed to load perticipant details, see console");
+            alert("Failed to load trial results, see console");
+            console.log(error);
+        });
+        }).catch(function (error) {
+            alert("Failed to load participant details, see console");
+            console.log(error);
+        });
+        }).catch(function (error) {
+            alert("Failed to load minimap data, see console");
             console.log(error);
         });
         }).catch(function (error) {
@@ -74,7 +84,7 @@ var run = function () {
     function setupButtons() {    
         var buttonsElem = document.getElementsByClassName("btn_control");
         for(var i = 0; i < buttonsElem.length; i++) {
-            /*researchSession.*/addClickEvent(buttonsElem[i]);
+            addClickEvent(buttonsElem[i]);
         }
     }
 
@@ -228,5 +238,6 @@ var run = function () {
             researchSession.timingObject.update({ position: x.invert(d.pageX - d3.select(this).node().getBoundingClientRect().x) });
         });    
     }
+
 //End run-function
 }
