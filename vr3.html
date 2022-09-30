@@ -13,8 +13,6 @@
     <link href="css/style.css" rel="stylesheet">
 
     <script src="https://d3js.org/d3.v7.min.js"></script>
-    <!--<script src="/js/external/three.js"></script>-->
-    <!--<script text="javascript" src="https://mcorp.no/lib/mediasync.js"></script>-->
     <script src="/js/external/mediasync.js"></script>
     <script src="/js/external/timingsrc-v2.js"></script>
     <script src="/js/researchsession.js"></script>
@@ -34,20 +32,16 @@
 <body>
     <div id="research-info">
         <div class="header-item">
-            <label class="box-text">Research:</label>
-            <label class="box-text" id="research">Dummytext</label>
+            <label class="box-text">Projectname:</label>
+            <label class="box-text" id="projectname">Unknown</label>
         </div>
         <div class="header-item">
-            <label class="box-text">Researcher:</label>
-            <label class="box-text" id="researcher">Dummytext</label>
+            <label class="box-text">Participant ID:</label>
+            <label class="box-text" id="participantid">Unknown</label>
         </div>
         <div class="header-item">
-            <label class="box-text">Participant:</label>
-            <label class="box-text" id="test-subject">Dummytext</label>
-        </div>
-        <div class="header-item">            
-            <label class="box-text">ID:</label>
-            <label class="box-text" id="subject-id">Dummytext</label>
+            <label class="box-text">Session number:</label>
+            <label class="box-text" id="sessionnumber">Unknown</label>
         </div>
     </div>
     <div id="output_container">
@@ -91,8 +85,6 @@
     <div class="clear-float"></div>
 
     <script>
-        //TODO: Change to actual loading video
-        // Directory and file location information
         const queryString = window.location.search;
         const urlParams = new URLSearchParams(queryString);
 
@@ -112,7 +104,6 @@
             "trial_results": "S001/trial_results.csv"
         };
 
-        console.log("Main script started"); 
-
+        console.log("Main script started for participant "+participantId); 
     </script>
 </body>

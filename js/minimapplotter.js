@@ -51,16 +51,18 @@ class MinimapPlotter{
         //Go through every timestamp in the log
         var i = 1;
         for (let i = 0; i < this.rawMinimapData.length-1; i++) {
-            const element = this.rawMinimapData[i];
-            var nexElement = this.rawMinimapData[i+1];
+            if (this.rawMinimapData[i].Timestamp-delay >= 0){
+                const element = this.rawMinimapData[i];
+                var nexElement = this.rawMinimapData[i+1];
 
-            var interval = new TIMINGSRC.Interval(element.Timestamp-delay, nexElement.Timestamp-delay);
-            minimapSequence.addCue(parseFloat(element.Timestamp-delay).toString(), interval, element);
+                var interval = new TIMINGSRC.Interval(element.Timestamp-delay, nexElement.Timestamp-delay);
+                minimapSequence.addCue(parseFloat(element.Timestamp-delay).toString(), interval, element);
+            }
         }
         //Add last cue until end of video
         var interval = new TIMINGSRC.Interval(this.rawMinimapData[i].Timestamp, duration);
         minimapSequence.addCue(parseFloat(this.rawMinimapData[i]).toString(), interval, this.rawMinimapData[i]);
-        console.log(minimapSequence)
+        
         return minimapSequence;
     }
 
@@ -68,8 +70,8 @@ class MinimapPlotter{
     //Add flexibility -> Only add position and css-class
     plotObjects(cueData){
         this.removeObjects();
-        
-        var hmdWidth = 60;
+        console.log(cueData.Hmd)
+        var hmdWidth = 30;
         var hmdX = this.cpCorr - (hmdWidth/2) + (cueData.Hmd.Position.X * this.sCorr);
         var hmdY = this.cpCorr - (hmdWidth/2) + (cueData.Hmd.Position.Y * -this.sCorr);
         //this.minimapSvg.append("rect")
@@ -77,7 +79,8 @@ class MinimapPlotter{
             .attr("id","HMD")
             .attr("x", hmdX)
             .attr("y", hmdY)
-            .attr("xlink:href", "css/img/imgHMD.png")
+            //.attr("xlink:href", "css/img/imgHMD.png")
+            .attr("xlink:href", "css/img/imgHMD_black.png")
             .attr("transform", "rotate(" + -cueData.Hmd.Rotation + "," + hmdX + "," + hmdY + ")");
 
         //var minimapSvg = d3.select(this.minimapBox);
@@ -104,8 +107,7 @@ class MinimapPlotter{
             .attr("height", rcHeight)
             .attr("xlink:href", "css/img/imgController.png")
             .attr("transform", "rotate(" + -cueData.Controllers[1].Rotation + "," + rcX + "," + rcY + ")");
-
-        
+    
 
         for (let i = 0; i < cueData.Objects.length; i++) {
             const element = cueData.Objects[i];

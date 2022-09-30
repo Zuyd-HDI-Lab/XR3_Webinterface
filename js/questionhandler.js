@@ -1,17 +1,19 @@
 class Questionnaire{
     constructor(rawQuestionData, rawAnswerData) {
-        console.log("Questionnaire created");
-
         //List of questions
-        if (typeof rawQuestionData.questions === 'undefined')
-            console.log("New questionlist NOT found");
-        else {
-            console.log("Questionlist found")
-            this.questionObjects = this.createQuestionList(rawQuestionData.questions);
+        if (rawQuestionData == undefined || rawQuestionData.questions == undefined){
+            this.questionObjects = undefined;
+            this.answerObjects = undefined;
         }
-        
-        console.log("Answerlist found")
-        this.answerObjects = this.createAnswerList(rawAnswerData);
+        else {
+            if (rawAnswerData == undefined){
+                this.answerObjects = undefined;
+            }
+            else{
+                this.questionObjects = this.createQuestionList(rawQuestionData.questions); 
+                this.answerObjects = this.createAnswerList(rawAnswerData);
+            }     
+        }
     }
 
     //Extract questionData based on VR_Questionaire data input
@@ -27,7 +29,6 @@ class Questionnaire{
 
     //Extract questionData based on VR_Questionaire data input
     createAnswerList(answerData){
-        console.log(answerData)
         //List of questions
         var answers = []
         answerData.forEach(element => {           
@@ -38,27 +39,29 @@ class Questionnaire{
     }
 
     createCues(answerSequence, delay){
-        if (this.answerObjects === undefined){
+        if (this.answerObjects == undefined){
             console.log("AnswerObjects not loaded");
             return undefined;
         }
+
         //Go through every timestamp in the answers
         this.answerObjects.forEach(element => {
-            var cueStartTime = parseFloat(element.startTime - delay);
-            var cueEndTime = parseFloat(element.endTime - delay);
+
+            var cueStartTime = parseFloat((element.startTime - delay).toFixed(0));
+            var cueEndTime = parseFloat((element.endTime - delay).toFixed(0));
             var interval = new TIMINGSRC.Interval(cueStartTime, cueEndTime);
+            
             //Check if the time is already included -> Multiple questionspage
-            if (answerSequence.hasCue(parseFloat(cueStartTime).toString())){
+            if (answerSequence.hasCue(cueStartTime.toString())){
                 //Add answer to the existing cue
-                var cue = answerSequence.getCue(parseFloat(cueStartTime).toString());
+                var cue = answerSequence.getCue(cueStartTime.toString());
                 cue.data.push(element);
             }
             else{
                 //Startingtime not cued yet
-                answerSequence.addCue(parseFloat(cueStartTime).toString(), interval, [element]);
+                answerSequence.addCue(cueStartTime.toString(), interval, [element]);
             }
         })
-        console.log(answerSequence);
         return answerSequence;
     }
 }
@@ -194,7 +197,7 @@ class AnwserData{
 
     showQuestionAnswers(cueAnswers){
         var answerString = "";
-        console.log(this.questionType, cueAnswers);
+        //console.log(this.questionType, cueAnswers);
         switch(this.questionType){
         case "task":
             answerString = this.pageObject.qInstructions + "</br><br>"; 

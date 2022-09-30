@@ -74,33 +74,36 @@ class ResearchSession {
         let answerSequence = new TIMINGSRC.Sequencer(this.timingObject);
         answerSequence = this.questionaire.createCues(answerSequence, this.delay);
         
-        answerSequence.on("change", function (e) {
-            var currentCue = answerSequence.getCue(e.key);
-            self.questionBox.innerHTML = currentCue.data[0].showQuestionAnswers(currentCue.data);
-            self.updateCircleStates(answerSequence.getCue(e.key));
-            //self.playAnswerAudio(e.data.answer);
-        });
-        answerSequence.on("remove", function (e) {
-            self.questionBox.innerHTML = "";
-        });
-
+        if (answerSequence != undefined){
+            answerSequence.on("change", function (e) {
+                var currentCue = answerSequence.getCue(e.key);
+                self.questionBox.innerHTML = currentCue.data[0].showQuestionAnswers(currentCue.data);
+                self.updateCircleStates(answerSequence.getCue(e.key));
+                //self.playAnswerAudio(e.data.answer);
+            });
+            answerSequence.on("remove", function (e) {
+                self.questionBox.innerHTML = "";
+            });
+        }
         this.answerSequence = answerSequence;
     }
 
     getNearestCue(direction) {
-        this.timingObject.update({ velocity: 0.0 });
+        if (this.answerSequence != undefined){
+            this.timingObject.update({ velocity: 0.0 });
 
-        var cues = this.answerSequence.keys();
-        var time = this.timingObject.query().position;
-                
-        var i;
-        if (direction === "right") {
-            i = d3.bisectRight(cues, time);
-        } else if (direction === "left") {
-            var iR = d3.bisectRight(cues, time);
-            i = d3.bisectLeft(cues, time) - 1;
+            var cues = this.answerSequence.keys();
+            var time = this.timingObject.query().position;
+                    
+            var i;
+            if (direction === "right") {
+                i = d3.bisectRight(cues, time);
+            } else if (direction === "left") {
+                var iR = d3.bisectRight(cues, time);
+                i = d3.bisectLeft(cues, time) - 1;
+            }
+            return this.answerSequence.getCue(cues[i]);
         }
-        return this.answerSequence.getCue(cues[i]);
     }
 
     updateCircleStates(cue) {
