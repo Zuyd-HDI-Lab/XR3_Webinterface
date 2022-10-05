@@ -1,25 +1,21 @@
 class Questionnaire{
-    constructor(rawQuestionData, rawAnswerData) {
-        console.log("Questionnaire created");
-        //this.rawAnswerData = rawAnswerData;
-        //console.log(rawAnswerData);
-
+    constructor(rawQuestionData, rawAnswerData, trial_results) {
+        this.trial_results = trial_results;
+        console.log(trial_results);
         //List of questions
-        //Old vs New check
-        if (typeof rawQuestionData.questions === 'undefined')
-            console.log("New questionlist NOT found");
-        else {
-            console.log("New questionlist found")
-            this.questionObjects = this.createQuestionList(rawQuestionData.questions);
+        if (rawQuestionData == undefined || rawQuestionData.questions == undefined){
+            this.questionObjects = undefined;
+            this.answerObjects = undefined;
         }
-        
-        //List of answerdata
-//        if (typeof rawAnswerData.answerList === 'undefined')
-//            console.log("New answerlist NOT found");
-//        else {
-            console.log("Answerlist found")
-            this.answerObjects = this.createAnswerList(rawAnswerData);
-//       }
+        else {
+            if (rawAnswerData == undefined){
+                this.answerObjects = undefined;
+            }
+            else{
+                this.questionObjects = this.createQuestionList(rawQuestionData.questions); 
+                this.answerObjects = this.createAnswerList(rawAnswerData);
+            }     
+        }
     }
 
     //Extract questionData based on VR_Questionaire data input
@@ -45,24 +41,27 @@ class Questionnaire{
     }
 
     createCues(answerSequence, delay){
-        if (this.answerObjects === undefined){
+        if (this.answerObjects == undefined){
             console.log("AnswerObjects not loaded");
             return undefined;
         }
+
         //Go through every timestamp in the answers
         this.answerObjects.forEach(element => {
-            var cueStartTime = parseFloat(element.startTime - delay);
-            var cueEndTime = parseFloat(element.endTime - delay);
+
+            var cueStartTime = parseFloat((element.startTime - delay).toFixed(0));
+            var cueEndTime = parseFloat((element.endTime - delay).toFixed(0));
             var interval = new TIMINGSRC.Interval(cueStartTime, cueEndTime);
+            
             //Check if the time is already included -> Multiple questionspage
-            if (answerSequence.hasCue(parseFloat(cueStartTime).toString())){
+            if (answerSequence.hasCue(cueStartTime.toString())){
                 //Add answer to the existing cue
-                var cue = answerSequence.getCue(parseFloat(cueStartTime).toString());
+                var cue = answerSequence.getCue(cueStartTime.toString());
                 cue.data.push(element);
             }
             else{
                 //Startingtime not cued yet
-                answerSequence.addCue(parseFloat(cueStartTime).toString(), interval, [element]);
+                answerSequence.addCue(cueStartTime.toString(), interval, [element]);
             }
         })
         return answerSequence;
@@ -140,20 +139,37 @@ class AnwserData{
             answerText = this.questionText +"</br>";
             answerText += this.pageObject.questions[this.questionId].qOptions[this.answer];
             break;
-        case "likert":
         case "radioGrid": 
             for (var key in this.pageObject.qConditions){
                 if (this.pageObject.qConditions[key].qId === this.cId){                    
                     answerText = this.pageObject.qConditions[key].qText +"</br>";
-                    answerText += this.pageObject.qOptions[this.answer];
+                    answerText += this.pageObject.qOptions[parseInt(this.answer)];
                 }
-            }            
+            }     
             break;
         case "checkbox":           
             answerText = "<tr><td>";
             if (this.answer === "1") answerText += "X   ";
             answerText += "</td><td>"+this.cId+"</td></tr>";
-            break;
+            break; 
+        case "likert":
+            answerText += "<table width='80%'>";
+            var optionText = "<tr>";
+            var answermark = "<tr>";
+            var width = 80/this.pageObject.qOptions.length;
+            for (var i in this.pageObject.qOptions) {
+                optionText += "<td>|</td><td align='center' width='"+width+"%'>"+this.pageObject.qOptions[i]+"</td>";
+                answermark += "<td>|</td><td align='center' width='"+width+"%'>";
+                if (i == parseInt(this.answer)){
+                    answermark += " X ";
+                }
+                else answermark += "  ";
+                answermark += "</td>";
+            }
+            optionText += "<td>|</td></tr>";
+            answermark += "<td>|</td></tr>";
+            answerText += optionText + answermark + "</table></br>";
+            break;                                    
         case "linearSlider":
         case "linearGrid": 
             answerText = this.questionText +"</br>"; 
@@ -164,7 +180,7 @@ class AnwserData{
             for (var i = min; i < max; i++) {
                 answerText += "<td>";
                 if (i == parseInt(this.answer)){
-                    answerText += " X ";
+                    answerText += this.answer;
                 }
                 else answerText += " - ";
                 answerText += "</td>";
@@ -183,25 +199,34 @@ class AnwserData{
 
     showQuestionAnswers(cueAnswers){
         var answerString = "";
-        console.log(this.questionType);
+        //console.log(this.questionType, cueAnswers);
         switch(this.questionType){
         case "task":
-            answerString = this.questionText + "</br><br>";
-            answerString += this.pageObject.qInstructions;
+            //answerString = this.pageObject.qInstructions + "</br><br>"; 
+            //answerString += this.questionText;           
             break;
         case "numericInput":
-            answerString = this.questionText +"</br></br>"+ this.answer;
+            answerString = this.questionText +"</br>"+ this.answer;
             break;
         case "radio":
         case "dropdown":
-            answerString = this.pageObject.qInstructions +"</br><br>";
+            answerString = "";
             for (var key in cueAnswers){
                 answerString += cueAnswers[key].getSingleAnswer() +"</br></br>";
             }
             break;
         case "likert":
+            answerString = this.questionText +"</br>"; 
+            for (var key in this.pageObject.qConditions){
+                if (this.pageObject.qConditions[key].qId === this.cId){                    
+                    answerString += this.pageObject.qConditions[key].qText +"</br></br>";
+                }
+            } 
+            for (var key in cueAnswers){
+                answerString += cueAnswers[key].getSingleAnswer();
+            }
+            break;
         case "radioGrid":
-            console.log(this)
             answerString = this.pageObject.questions[this.questionId].qText +"</br></br>";
             for (var key in cueAnswers){
                 answerString += cueAnswers[key].getSingleAnswer() +"</br></br>";

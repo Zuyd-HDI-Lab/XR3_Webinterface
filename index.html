@@ -11,15 +11,49 @@
 
     <link href="https://fonts.googleapis.com/css?family=Inconsolata|Roboto:400,700&display=swap" rel="stylesheet">
     <link href="css/style.css" rel="stylesheet">
-
     <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script type="text/javascript" src="/data/participantlist.js"></script>
 </head>
 
 <body>
-<h1>Welcome Researcher</h1>
-<div>
-    <p>Please select the study and participant to analyse:</p>
-    <p>TODO -> Add fileselector</p>
-    <button type="button" onclick="window.location.href='vr3.html'">Analyse</button>
-</div>
+    <h1>Welcome Researcher</h1>
+    <div id="rb_partlist">
+        <p>Select participant:</p>
+    </div>
+    </br>
+    <button id="btn" type="button">Analyse</button>
+    <script>
+        var rb_partlist = d3.select("#rb_partlist");    
+        var onEnter = rb_partlist.selectAll("div")
+            .data(partlist)
+            .enter()
+            .append("div")
+            .attr("id", function(d) { return "div"+d;});
+
+        onEnter.append("input")
+            .attr("type","radio")
+            .attr("name", "partid")
+            .attr("id", function(d) { return "rb"+d;})
+            .attr("value", function(d) { return d; })
+        
+        onEnter.append("label")
+            .attr("id", function(d) { return "lbl"+d; })
+            .attr("value", function(d) { return d; })
+            .text(function(d) { return "Participant " + d; })                
+        
+        let selectedParticipant = "002";
+        const btn = document.querySelector('#btn');        
+        const radioButtons = document.querySelectorAll('input');
+        console.log(radioButtons)
+        btn.addEventListener("click", () => {            
+            for (const radioButton of radioButtons) {
+                if (radioButton.checked) {
+                    console.log(radioButton)
+                    selectedParticipant = radioButton.value;
+                    break;
+                }
+            }
+            window.location.href="vr3.html?partid="+selectedParticipant;
+        });
+    </script>
 </body>

@@ -59,17 +59,28 @@ body {
     overflow: hidden;
 }
 
-#minimap-timing {
-    height: 350px;
-    width: 100%;
+#minimap-canvas {
+    height: 400px;
+    width: 400px;
     position: relative;
     display: block;
     background: #FFF;
 }
 
+/*Minimap objects*/
+#HMD{
+    width: 30px;
+    height: 30px;
+}
+
+.controller{
+    stroke: "black";
+    fill: "blue";
+}
+
 /*Questions and answers*/
 #question-parent {
-    height: 350px;
+    height: 250px;
     width: 100%;
     position: relative;
     display: flex;
@@ -178,14 +189,6 @@ div#question-marker-parent {
     border-radius: 20px;
     padding: 2px;
 }
-
-/*div.previous {
-    background-color: #000!important;
-}
-
-div.next {
-    background-color: #FFF!important;
-}*/
 
 div.current {
     border-width: 0.5px;
