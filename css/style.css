@@ -59,17 +59,28 @@ body {
     overflow: hidden;
 }
 
-#minimap-timing {
-    height: 350px;
-    width: 100%;
+#minimap-canvas {
+    height: 400px;
+    width: 400px;
     position: relative;
     display: block;
     background: #FFF;
 }
 
+/*Minimap objects*/
+#HMD{
+    width: 30px;
+    height: 30px;
+}
+
+.controller{
+    stroke: "black";
+    fill: "blue";
+}
+
 /*Questions and answers*/
 #question-parent {
-    height: 350px;
+    height: 250px;
     width: 100%;
     position: relative;
     display: flex;
@@ -148,6 +159,17 @@ div#slider_controls {
     border-left-color: #bfbdbd;
 }
 
+#slider-div {
+    border-radius: 30px;
+    height: 10px;
+    -webkit-box-shadow: inset 1px 1px 3px 0px rgba(50, 50, 50, 0.24);
+    -moz-box-shadow: inset 1px 1px 3px 0px rgba(50, 50, 50, 0.24);
+    box-shadow: inset 1px 1px 3px 0px rgba(50, 50, 50, 0.24);
+    background: #e8e8e8;
+    padding-top: 2px;
+    padding-left: 2px;
+}
+
 div#question-marker-parent {
     position: relative;
     top: 10px;
@@ -168,6 +190,13 @@ div#question-marker-parent {
     padding: 2px;
 }
 
+div.current {
+    border-width: 0.5px;
+    border-color: #bfd2be;
+    border-style: solid;
+    background-color: #e2e2e2!important;
+}
+
 #slider-progress {
     height: 8px;
     background: #93278F;
@@ -175,4 +204,8 @@ div#question-marker-parent {
     /* margin-top: 1px; */
     border-top-left-radius: 10px;
     border-bottom-left-radius: 10px;
+}
+
+.progress-hover {
+    background-color: blue!important;
 }
