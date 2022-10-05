@@ -10,9 +10,7 @@ class ResearchSession {
         this.videosync = MCorp.mediaSync(document.getElementById('video-feed'), this.timingObject);
         
         //Questionnaire data
-        //this.questionData = rawQuestionData;
-        //this.answerData = rawAnswerData;
-        this.questionaire = new Questionnaire(rawQuestionData, rawAnswerData);
+        this.questionaire = new Questionnaire(rawQuestionData, rawAnswerData, trial_results);
         this.questionSequence;
         this.answerSequence;
         this.createAnswerCues();
@@ -21,7 +19,6 @@ class ResearchSession {
         //Minimap data        
         this.minimapBox = d3.select("#minimap-canvas");
         this.minimapPlotter = new MinimapPlotter(minimapData, this.minimapBox, trial_results);
-
         this.createMinimapCues();
 
         //Connection to html-elements
@@ -29,13 +26,13 @@ class ResearchSession {
         this.questionBox = document.getElementById("question-timing");
         this.answerBox = document.getElementById("answer-timing");
         this.sliderBox = d3.select("#slider_controls");
-        this.sliderProgress;//Does not exist while creacting ResearchSession!!
+        this.sliderProgress; //Does not exist while creacting ResearchSession
         this.progressPadding = 2;        
     }
 
     //Update the timer and set slider to start if time is 0.00
     timeUpdate() {
-        var rs = this
+        var rs = this;
         rs.timingObject.on("timeupdate", function () {
             rs.timeSec = rs.timingObject.query().position.toFixed(2);
             rs.timeBox.innerHTML = rs.timeSec;
@@ -55,17 +52,9 @@ class ResearchSession {
         
         minimapSequence.on("change", function (e) {
             var currentCue = minimapSequence.getCue(e.key);
-            //console.log(currentCue.data);
             self.minimapPlotter.plotObjects(currentCue.data);
-
-            //self.questionBox.innerHTML = currentCue.data[0].showQuestionAnswers(currentCue.data);
-            //self.updateCircleStates(answerSequence.getCue(e.key));
         });
-        minimapSequence.on("remove", function (e) {
-            //console.log("MinimapSequence Remove")
-            //self.questionBox.innerHTML = "";
-        });
-
+        minimapSequence.on("remove", function (e) {});
         this.minimapSequence = minimapSequence;
     }
 
@@ -79,7 +68,6 @@ class ResearchSession {
                 var currentCue = answerSequence.getCue(e.key);
                 self.questionBox.innerHTML = currentCue.data[0].showQuestionAnswers(currentCue.data);
                 self.updateCircleStates(answerSequence.getCue(e.key));
-                //self.playAnswerAudio(e.data.answer);
             });
             answerSequence.on("remove", function (e) {
                 self.questionBox.innerHTML = "";

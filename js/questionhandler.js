@@ -1,5 +1,7 @@
 class Questionnaire{
-    constructor(rawQuestionData, rawAnswerData) {
+    constructor(rawQuestionData, rawAnswerData, trial_results) {
+        this.trial_results = trial_results;
+        console.log(trial_results);
         //List of questions
         if (rawQuestionData == undefined || rawQuestionData.questions == undefined){
             this.questionObjects = undefined;
@@ -200,8 +202,8 @@ class AnwserData{
         //console.log(this.questionType, cueAnswers);
         switch(this.questionType){
         case "task":
-            answerString = this.pageObject.qInstructions + "</br><br>"; 
-            answerString += this.questionText;           
+            //answerString = this.pageObject.qInstructions + "</br><br>"; 
+            //answerString += this.questionText;           
             break;
         case "numericInput":
             answerString = this.questionText +"</br>"+ this.answer;
