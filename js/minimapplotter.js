@@ -70,45 +70,55 @@ class MinimapPlotter{
     //Add flexibility -> Only add position and css-class
     plotObjects(cueData){
         this.removeObjects();
-        console.log(cueData.Hmd)
-        var hmdWidth = 30;
-        var hmdX = this.cpCorr - (hmdWidth/2) + (cueData.Hmd.Position.X * this.sCorr);
-        var hmdY = this.cpCorr - (hmdWidth/2) + (cueData.Hmd.Position.Y * -this.sCorr);
-        //this.minimapSvg.append("rect")
-        this.minimapSvg.append("svg:image")
-            .attr("id","HMD")
-            .attr("x", hmdX)
-            .attr("y", hmdY)
-            //.attr("xlink:href", "css/img/imgHMD.png")
-            .attr("xlink:href", "css/img/imgHMD_black.png")
-            .attr("transform", "rotate(" + -cueData.Hmd.Rotation + "," + hmdX + "," + hmdY + ")");
 
-        //var minimapSvg = d3.select(this.minimapBox);
-        //console.log(minimapSvg);
-        this.minimapSvg.append("circle")
+        //Draw left and right controller
+        var controllerWidth = 30;
+        var controllerHeigth = 30;
+
+        var lcXcenter = this.cpCorr + (cueData.Controllers[0].Position.X * this.sCorr);
+        var lcYcenter = this.cpCorr + (cueData.Controllers[0].Position.Y * -this.sCorr);
+
+        this.minimapSvg.append("svg:line")
+            .attr("id","LeftLine")
+            .attr("x1", lcXcenter)
+            .attr("y1", lcYcenter)
+            .attr("x2", lcXcenter)
+            .attr("y2", lcYcenter - 300)
+            .attr("stroke-width", 2)
+            .attr("stroke", "black")
+            .attr("transform", "rotate(" + -cueData.Controllers[0].Rotation + "," + lcXcenter + "," + lcYcenter + ")");
+
+        this.minimapSvg.append("svg:image")
             .attr("id","LeftController")
-            .attr("class", "controller")
-            .attr("cx", this.cpCorr + (cueData.Controllers[0].Position.X * this.sCorr))
-            .attr("cy", this.cpCorr + (cueData.Controllers[0].Position.Y * -this.sCorr))
-            .attr("r", 5)
-            //.attr("stroke", "black")
-            //.attr("fill","blue");
-        
-        var rcWidth = 40;
-        var rcHeight = 60;
-        var rcX = this.cpCorr - (rcWidth/2) + (cueData.Controllers[1].Position.X * this.sCorr);
-        var rcY = this.cpCorr - (rcHeight/2) + (cueData.Controllers[1].Position.Y * -this.sCorr);
-  
+            .attr("x", lcXcenter - (controllerWidth/2))
+            .attr("y", lcYcenter - (controllerHeigth/2))
+            .attr("width", controllerWidth)
+            .attr("height", controllerHeigth)
+            .attr("xlink:href", "css/img/imgController.png")
+            .attr("transform", "rotate(" + -cueData.Controllers[0].Rotation + "," + lcXcenter + "," + lcYcenter + ")");
+
+        var rcXcenter = this.cpCorr - (controllerWidth/2) + (cueData.Controllers[1].Position.X * this.sCorr);
+        var rcYcenter = this.cpCorr - (controllerHeigth/2) + (cueData.Controllers[1].Position.Y * -this.sCorr);
+
+        this.minimapSvg.append("svg:line")
+            .attr("id","LeftLine")
+            .attr("x1", rcXcenter)
+            .attr("y1", rcYcenter)
+            .attr("x2", rcXcenter)
+            .attr("y2", rcYcenter - 300)
+            .attr("stroke-width", 2)
+            .attr("stroke", "black")
+            .attr("transform", "rotate(" + -cueData.Controllers[1].Rotation + "," + rcXcenter + "," + rcYcenter + ")");
+
         this.minimapSvg.append("svg:image")
             .attr("id","RightController")
-            .attr("x", rcX)
-            .attr("y", rcY)
-            .attr("width", rcWidth)
-            .attr("height", rcHeight)
+            .attr("x", rcXcenter - (controllerWidth/2))
+            .attr("y", rcYcenter - (controllerHeigth/2))
+            .attr("width", controllerWidth)
+            .attr("height", controllerHeigth)
             .attr("xlink:href", "css/img/imgController.png")
-            .attr("transform", "rotate(" + -cueData.Controllers[1].Rotation + "," + rcX + "," + rcY + ")");
+            .attr("transform", "rotate(" + -cueData.Controllers[1].Rotation + "," + rcXcenter + "," + rcYcenter + ")");
     
-
         for (let i = 0; i < cueData.Objects.length; i++) {
             const element = cueData.Objects[i];
             if (element.Visible){
@@ -129,11 +139,23 @@ class MinimapPlotter{
                     .attr("y", this.cpCorr + (element.Position.Y * -this.sCorr))
                     .attr("r", 5)
                     .attr("stroke", "black")
-                    .text(element.Id);
-                    
+                    .text(element.Id);                    
             }
-        }        
+        }
+
+        //Draw HMD
+        var hmdWidth = 30;
+        var hmdXcenter = this.cpCorr  + (cueData.Hmd.Position.X * this.sCorr);
+        var hmdYcenter = this.cpCorr  + (cueData.Hmd.Position.Y * -this.sCorr);
+        //this.minimapSvg.append("rect")
+        this.minimapSvg.append("svg:image")
+            .attr("id","HMD")
+            .attr("x", hmdXcenter - (hmdWidth/2))
+            .attr("y", hmdYcenter - (hmdWidth/2))
+            .attr("xlink:href", "css/img/imgHMD.png")
+            .attr("transform", "rotate(" + -cueData.Hmd.Rotation +","+ hmdXcenter +","+ hmdYcenter +")");               
     }
+
 
     removeObjects(){
         d3.select("#minimapSvg").selectAll('*').remove();

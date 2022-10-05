@@ -19,7 +19,7 @@ class ResearchSession {
 
         this.trial_results = trial_results;
         //Minimap data        
-        this.minimapBox = d3.select("#minimap-timing");
+        this.minimapBox = d3.select("#minimap-canvas");
         this.minimapPlotter = new MinimapPlotter(minimapData, this.minimapBox, trial_results);
 
         this.createMinimapCues();
