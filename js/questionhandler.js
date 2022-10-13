@@ -198,25 +198,25 @@ class AnwserData{
     }
 
     showQuestionAnswers(cueAnswers){
-        var answerString = "";
-        //console.log(this.questionType, cueAnswers);
+        var completionTime = parseFloat(cueAnswers[0].endTime - cueAnswers[0].startTime).toFixed(2);
+        var answerString = "<small>Completion time: " + completionTime +"</small></br></br>";
         switch(this.questionType){
         case "task":
             //answerString = this.pageObject.qInstructions + "</br><br>"; 
             //answerString += this.questionText;           
             break;
         case "numericInput":
-            answerString = this.questionText +"</br>"+ this.answer;
+            answerString += this.questionText +"</br>"+ this.answer;
             break;
         case "radio":
         case "dropdown":
-            answerString = "";
+            //answerString = "";
             for (var key in cueAnswers){
                 answerString += cueAnswers[key].getSingleAnswer() +"</br></br>";
             }
             break;
         case "likert":
-            answerString = this.questionText +"</br>"; 
+            answerString += this.questionText +"</br>"; 
             for (var key in this.pageObject.qConditions){
                 if (this.pageObject.qConditions[key].qId === this.cId){                    
                     answerString += this.pageObject.qConditions[key].qText +"</br></br>";
@@ -227,13 +227,13 @@ class AnwserData{
             }
             break;
         case "radioGrid":
-            answerString = this.pageObject.questions[this.questionId].qText +"</br></br>";
+            answerString += this.pageObject.questions[this.questionId].qText +"</br></br>";
             for (var key in cueAnswers){
                 answerString += cueAnswers[key].getSingleAnswer() +"</br></br>";
             }
             break;
         case "checkbox": 
-            answerString = this.pageObject.questions[this.questionId].qText +"</br></br>";
+            answerString += this.pageObject.questions[this.questionId].qText +"</br></br>";
             answerString += "<table>";            
             for (var key in cueAnswers){
                 answerString += cueAnswers[key].getSingleAnswer();
@@ -242,7 +242,7 @@ class AnwserData{
             break;
         case "linearSlider":
         case "linearGrid": 
-            answerString = "";
+            //answerString = "";
             for (var key in cueAnswers){
                 answerString += cueAnswers[key].getSingleAnswer();
             }

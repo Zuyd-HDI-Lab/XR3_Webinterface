@@ -16,19 +16,21 @@
 </head>
 
 <body>
-    <h1>Welcome Researcher</h1>
-    <div id="rb_partlist">
-        <p>Select participant:</p>
+    <div id="divPartSelection">
+        <h1>Welcome Researcher</h1>
+        <div id="rb_partlist">
+            <p>Select participant:</p>
+        </div>
+        <button id="btnAnalyse" type="button">Analyse</button>
     </div>
-    </br>
-    <button id="btn" type="button">Analyse</button>
     <script>
         var rb_partlist = d3.select("#rb_partlist");    
         var onEnter = rb_partlist.selectAll("div")
             .data(partlist)
             .enter()
             .append("div")
-            .attr("id", function(d) { return "div"+d;});
+            .attr("class", "partDiv")
+            //.attr("id", function(d) { return "div"+d;});
 
         onEnter.append("input")
             .attr("type","radio")
@@ -42,9 +44,8 @@
             .text(function(d) { return "Participant " + d; })                
         
         let selectedParticipant = "002";
-        const btn = document.querySelector('#btn');        
+        const btn = document.querySelector('#btnAnalyse');        
         const radioButtons = document.querySelectorAll('input');
-        console.log(radioButtons)
         btn.addEventListener("click", () => {            
             for (const radioButton of radioButtons) {
                 if (radioButton.checked) {
@@ -53,7 +54,7 @@
                     break;
                 }
             }
-            window.location.href="vr3.html?partid="+selectedParticipant;
+            window.location.href="vr3.html?partid="+ selectedParticipant;
         });
     </script>
 </body>

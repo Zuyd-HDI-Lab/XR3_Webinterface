@@ -6,6 +6,23 @@ body {
     font-family: 'Source Sans Pro', sans-serif;
 }
 
+/*Index*/
+#divPartSelection{
+    margin: 10px;
+}
+
+#btnAnalyse{
+    margin-top: 20px;
+    background-color: #8f1393ce;
+    color: white;
+    border-width: thin;
+}
+
+.partDiv{
+    background-color: white;
+    margin:10px;
+}
+
 /*Research Info*/
 #research-info {
     width: 100%;
@@ -20,7 +37,7 @@ body {
 
 .header-item {
     width: 25%;
-    font-size: 20px;
+    font-size: 15px;
 }
 
 /*Video feed*/
@@ -65,6 +82,10 @@ body {
     position: relative;
     display: block;
     background: #FFF;
+}
+
+#minimap-settings{
+    font-size: 12px;
 }
 
 /*Minimap objects*/
