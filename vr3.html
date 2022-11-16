@@ -31,6 +31,7 @@
 
 <body>
     <div id="research-info">
+        <a href="index.html"><img id="home_button" src="/css/img/home_button.png"></a>
         <div class="header-item">
             <label class="box-text">Projectname:</label>
             <label class="box-text" id="projectname">Unknown</label>
@@ -38,6 +39,7 @@
         <div class="header-item">
             <label class="box-text">Participant ID:</label>
             <label class="box-text" id="participantid">Unknown</label>
+            
         </div>
         <div class="header-item">
             <label class="box-text">Session number:</label>
@@ -85,6 +87,11 @@
     <div class="clear-float"></div>
 
     <script>
+        function favTutorial() {  
+            var mylist = document.getElementById("myList");  
+            document.getElementById("favourite").value = mylist.options[mylist.selectedIndex].text;  
+        }  
+
         const queryString = window.location.search;
         const urlParams = new URLSearchParams(queryString);
 
@@ -105,5 +112,8 @@
         };
 
         console.log("Main script started for participant "+participantId); 
+
+
+
     </script>
 </body>
