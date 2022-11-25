@@ -31,8 +31,8 @@ var run = function () {
         // Load data and video files
 
         d3.json(directory + urls.questions).then(function (questionData) {
-            d3.json(directory + urls.answers).then(function (answerData) { 
-            //d3.csv(directory + urls.answers).then(function (answerData) {
+            //d3.dsv(";",directory + urls.answers).then(function (answerData) {
+            d3.csv(directory + urls.answers).then(function (answerData) {                
                 this.answerData = answerData;            
                 this.questionData = questionData;
             }).catch(function (error) { console.log("** Questionnaire data not available **");});

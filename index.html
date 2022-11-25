@@ -13,6 +13,7 @@
     <link href="css/style.css" rel="stylesheet">
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <script type="text/javascript" src="/data/participantlist.js"></script>
+    <script type="text/javascript" src="/js/participantIndex.js"></script>
 </head>
 
 <body>
@@ -22,39 +23,62 @@
             <p>Select participant:</p>
         </div>
         <button id="btnAnalyse" type="button">Analyse</button>
+        <button id="btnDownloadAll" type="button">Download All</button>
+        <button id="btnDownloadSelected" type="button">Download Selected</button>
     </div>
     <script>
-        var rb_partlist = d3.select("#rb_partlist");    
-        var onEnter = rb_partlist.selectAll("div")
-            .data(partlist)
-            .enter()
-            .append("div")
-            .attr("class", "partDiv")
-            //.attr("id", function(d) { return "div"+d;});
+        fileList = createFileList();
+        Promise.all(fileList)            
+        .then(function (part_details) {
+            var partInfoList = createPartInfo(part_details);
+            
+            table = d3.select("#rb_partlist").append('table')
+                .style("border-collapse", "collapse")
+                .style("border", "2px black solid");
 
-        onEnter.append("input")
-            .attr("type","radio")
-            .attr("name", "partid")
-            .attr("id", function(d) { return "rb"+d;})
-            .attr("value", function(d) { return d; })
-        
-        onEnter.append("label")
-            .attr("id", function(d) { return "lbl"+d; })
-            .attr("value", function(d) { return d; })
-            .text(function(d) { return "Participant " + d; })                
-        
-        let selectedParticipant = "002";
-        const btn = document.querySelector('#btnAnalyse');        
-        const radioButtons = document.querySelectorAll('input');
-        btn.addEventListener("click", () => {            
-            for (const radioButton of radioButtons) {
-                if (radioButton.checked) {
-                    console.log(radioButton)
-                    selectedParticipant = radioButton.value;
-                    break;
-                }
-            }
-            window.location.href="vr3.html?partid="+ selectedParticipant;
-        });
+            // headers
+            table.append("thead").append("tr")
+                .selectAll("th")
+                .data(partInfoList[0])
+                .enter().append("th")
+                .attr("class","partList_header")
+                .text(function(d) { return d; })
+
+            // data
+            table.append("tbody")
+                .selectAll("tr").data(partInfoList.slice(1))
+                .enter().append("tr")
+                .attr("id", function(d){return d[1]})
+                .selectAll("td")
+                .data(function(d){return d;})
+                .enter().append("td")
+                //.attr("name",function(d){return d})
+                .attr("class",function(d){return d})
+                .text(function(d){return d })
+                
+           //Add checkboxes after last colomn
+           d3.select("tbody").selectAll("tr")
+                .append("td").append('input')
+                .attr("type","checkbox")
+                .attr("id", "downloadBox")
+                .attr("value", function(d){return this.parentNode.parentNode.id});
+
+            //Highlight selectedRow 
+            let selectedParticipant = "002";              
+            var tr = table.selectAll("tr")
+                .on("click", function(d) {
+                    if (d.path[0].id != "downloadBox"){
+                        tr.classed("selectedRow", false);
+                        d3.select(this).classed("selectedRow", true);
+                        selectedParticipant = d.path[1].id;
+                    }
+            });          
+             
+            document.querySelector('#btnAnalyse').addEventListener("click", () => { window.location.href="vr3.html?partid="+ selectedParticipant;});
+
+            document.querySelector('#btnDownloadAll').addEventListener("click", () => { console.log("TODO: Download all data");});
+            document.querySelector('#btnDownloadSelected').addEventListener("click", () => { console.log("TODO: Download selected data")});
+
+        }).catch(function (error) { console.log(error);});
     </script>
 </body>

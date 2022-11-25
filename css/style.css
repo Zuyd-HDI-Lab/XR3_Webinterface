@@ -11,6 +11,22 @@ body {
     margin: 10px;
 }
 
+tbody {
+    font-size: 12px;
+}
+
+.partList_header{
+    border: 1px black solid;
+    padding: 5px;
+    background-color: lightgray;
+    font-weight: bold;
+}
+
+.selectedRow{
+    background-color: #8f1393ce;
+    color: white;
+}
+
 #btnAnalyse{
     margin-top: 20px;
     background-color: #8f1393ce;
@@ -18,10 +34,6 @@ body {
     border-width: thin;
 }
 
-.partDiv{
-    background-color: white;
-    margin:10px;
-}
 
 /*Research Info*/
 #home_button{
@@ -111,27 +123,27 @@ body {
 
 .gridlines{
     stroke-width: 1;
-    stroke: grey;
+    stroke: lightgray;
 }
 
 .sphereNormal{
-    color: "#93278F";
-    stroke: black;
-    
-}
-
-.sphereClicked{
-    color: "#93278F";
+    fill: #93278F;
     stroke: black;
 }
-
+.sphereInvisible{
+    fill: #93278f48;
+    stroke: lightgray;    
+}
 .sphereHighlighted{
-    color: "#719E98";
+    fill: #719E98;
+    stroke: black;    
+}
+.sphereClicked{
+    fill: red;
     stroke: black;
-    
 }
 .sphereClickedTarget{
-    color: green;
+    fill: green;
     stroke: black;
 }
 

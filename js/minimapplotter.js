@@ -46,8 +46,13 @@ class MinimapPlotter{
     }
 
     combineTrialResults(){
+        
         var trialIndex = 0;
+        while (this.trial_results[trialIndex].trial_num == ""){ //Skip Questionaire sections
+            trialIndex++;
+        }
         var currentTrialResult = this.trial_results[trialIndex];
+
         for (var i = 0; i < this.rawMinimapData.length && trialIndex < this.trial_results.length; i++){
             if (currentTrialResult.start_time <= this.rawMinimapData[i].Timestamp && currentTrialResult.end_time > this.rawMinimapData[i].Timestamp){
                 var target_id = parseInt(currentTrialResult.target_id);
@@ -56,12 +61,16 @@ class MinimapPlotter{
                 for (let j = 0; j < this.rawMinimapData[i].Objects.length; j++) {
                     this.rawMinimapData[i].Objects[j].Target = (this.rawMinimapData[i].Objects[j].Id == target_id)                    
                     this.rawMinimapData[i].Objects[j].Clicked = (this.rawMinimapData[i].Objects[j].Id == clicked_id)
-                    this.rawMinimapData[i].Objects[j].Highlighted = highlighted;
+                    if (this.rawMinimapData[i].Objects[j].Id == target_id ) this.rawMinimapData[i].Objects[j].Highlighted = highlighted;
+                    else this.rawMinimapData[i].Objects[j].Highlighted = false;
                 }
             }
             else if (currentTrialResult.end_time <= this.rawMinimapData[i].Timestamp){
                 trialIndex++;
-                currentTrialResult = this.trial_results[trialIndex];
+                while (trialIndex < this.trial_results.length && this.trial_results[trialIndex].trial_num == ""){
+                    trialIndex++;                    
+                }
+                currentTrialResult = this.trial_results[trialIndex];                
             }
         }
     }
@@ -118,45 +127,43 @@ class MinimapPlotter{
             //console.log("Spheres:",cueData.Objects)
             for (let i = 0; i < cueData.Objects.length; i++) {
                 const element = cueData.Objects[i];
+                var cssClass = "sphereInvisible";
                 if (element.Visible || element.Target || element.Clicked){
-                    var fillColor = "#93278F";
-                    if (element.Target && element.Clicked)
-                        fillColor = "green";
-                    else{
-                        if (element.Target && element.Highlighted) fillColor = "#719E98";
-                        if (element.Clicked) fillColor = "red";
+                    cssClass = "sphereNormal";
+                    //console.log(element)
+                    if (element.Highlighted) cssClass = "sphereHighlighted";
+                    if (element.Clicked){
+                        cssClass = "sphereClicked";
+                        if (element.Target) cssClass = "sphereClickedTarget";                        
                     }
-                    var cx = this.cpCorr + (element.Position.X *  this.sCorr)
-                    var cy = this.cpCorr + (element.Position.Y * -this.sCorr)
-                    if (element.Target){
-                        this.minimapSvg.append("circle")
-                            .attr("id","Object"+element.Id)
-                            .attr("cx", cx)
-                            .attr("cy", cy)
-                            .attr("r", 13)
-                            .attr("stroke", "black")
-                            .attr("fill", "transparent")
-                            .attr("transform", "rotate(" + element.Rotation + "," + cx + "," + cy + ")");
-                    }
-                    
+                }
+                
+                var cx = this.cpCorr + (element.Position.X *  this.sCorr)
+                var cy = this.cpCorr + (element.Position.Y * -this.sCorr)
+                if (element.Target){
                     this.minimapSvg.append("circle")
                         .attr("id","Object"+element.Id)
-                        .attr("cx", cx)
-                        .attr("cy", cy)
-                        .attr("r", 10)
+                        .attr("cx", cx).attr("cy", cy).attr("r", 13)
                         .attr("stroke", "black")
-                        .attr("fill", fillColor)
+                        .attr("fill", "transparent")
                         .attr("transform", "rotate(" + element.Rotation + "," + cx + "," + cy + ")");
+                }                    
+                this.minimapSvg.append("circle")
+                    .attr("id","Object"+element.Id)
+                    .attr("class", cssClass)
+                    .attr("cx", cx)
+                    .attr("cy", cy)
+                    .attr("r", 10)
+                    .attr("transform", "rotate(" + element.Rotation + "," + cx + "," + cy + ")");
 
-                    var eltxt = element.Id;
-                    if (eltxt == 0) eltxt = 8;
-                    this.minimapSvg.append("text")
-                        .attr("id","Text"+element.Id)
-                        .attr("x", this.cpCorr + (element.Position.X *  this.sCorr) - 5)
-                        .attr("y", this.cpCorr + (element.Position.Y * -this.sCorr) + 5)
-                        .attr("fill", "white")
-                        .text(eltxt);                    
-                }
+                var eltxt = element.Id;
+                if (eltxt == 0) eltxt = 8;
+                this.minimapSvg.append("text")
+                    .attr("id","Text"+element.Id)
+                    .attr("x", this.cpCorr + (element.Position.X *  this.sCorr) - 5)
+                    .attr("y", this.cpCorr + (element.Position.Y * -this.sCorr) + 5)
+                    .attr("fill", "white")
+                    .text(eltxt);                    
             }
         }
 

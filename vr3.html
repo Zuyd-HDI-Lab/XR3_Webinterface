@@ -99,16 +99,17 @@
         if (urlParams.has('partid')){
             participantId = urlParams.get('partid');
         }
-        let directory = "/data/"+participantId+"/";
+        let sessionID = "S001";
+        let directory = "/data/"+participantId+"/"+sessionID+"/";
 
         let urls = {
             "video": "Participant View.mp4",
-            "answers": "Questionnaire/questionnaireID_Soni_participantID_id2_condition_AB_answers.json",
-//            "answers": "Questionnaire/questionnaireID_Soni_participantID_id2_condition_AB_answers.csv",
+            //"answers": "Questionnaire/questionnaireID_Soni_participantID_id2_condition_AB_answers.json",
+            "answers": "Questionnaire/questionnaireID_Soni_participantID_id2_condition_AB_answers.csv",
             "questions": "Questionnaire/sonification likert.json",
             "logs": "Minimap/minimap_log.json",
-            "participant_details": "S001/session_info/participant_details.csv",
-            "trial_results": "S001/trial_results.csv"
+            "participant_details": "session_info/participant_details.csv",
+            "trial_results": "complete_trial_results.csv"
         };
 
         console.log("Main script started for participant "+participantId); 
