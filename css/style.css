@@ -11,6 +11,22 @@ body {
     margin: 10px;
 }
 
+tbody {
+    font-size: 12px;
+}
+
+.partList_header{
+    border: 1px black solid;
+    padding: 5px;
+    background-color: lightgray;
+    font-weight: bold;
+}
+
+.selectedRow{
+    background-color: #8f1393ce;
+    color: white;
+}
+
 #btnAnalyse{
     margin-top: 20px;
     background-color: #8f1393ce;
@@ -18,12 +34,11 @@ body {
     border-width: thin;
 }
 
-.partDiv{
-    background-color: white;
-    margin:10px;
-}
 
 /*Research Info*/
+#home_button{
+    width: 30px;
+}
 #research-info {
     width: 100%;
     float: left;
@@ -32,10 +47,11 @@ body {
     padding-left: 20px;
     display: flex;
     background-color: #8f1393ce;
-    color: white;
+    color: white;    
 }
 
 .header-item {
+    margin-left: 10px;
     width: 25%;
     font-size: 15px;
 }
@@ -90,13 +106,45 @@ body {
 
 /*Minimap objects*/
 #HMD{
-    width: 30px;
     height: 30px;
+    width: 30px;
 }
 
 .controller{
-    stroke: "black";
-    fill: "blue";
+    height: 30px;
+    width: 30px;
+}
+
+.controllerLine{
+    height: 300px;
+    stroke-width: 2;
+    stroke: black;
+}
+
+.gridlines{
+    stroke-width: 1;
+    stroke: lightgray;
+}
+
+.sphereNormal{
+    fill: #93278F;
+    stroke: black;
+}
+.sphereInvisible{
+    fill: #93278f48;
+    stroke: lightgray;    
+}
+.sphereHighlighted{
+    fill: #719E98;
+    stroke: black;    
+}
+.sphereClicked{
+    fill: red;
+    stroke: black;
+}
+.sphereClickedTarget{
+    fill: green;
+    stroke: black;
 }
 
 /*Questions and answers*/
@@ -199,7 +247,6 @@ div#question-marker-parent {
 .question-marker {
     position: relative;
     background: #93278F;
-    color: #000000;
     font-family: Arial;
     font-size: 20px;
     line-height: 31px;
@@ -208,12 +255,15 @@ div#question-marker-parent {
     width: 34px;
     height: 34px;
     border-radius: 20px;
+    border-color:#000000;
+    border-width: 0.5px;
+    border-style: solid;
     padding: 2px;
 }
 
 div.current {
     border-width: 0.5px;
-    border-color: #bfd2be;
+    border-color:#000000;
     border-style: solid;
     background-color: #e2e2e2!important;
 }

@@ -31,6 +31,7 @@
 
 <body>
     <div id="research-info">
+        <a href="index.html"><img id="home_button" src="/css/img/home_button.png"></a>
         <div class="header-item">
             <label class="box-text">Projectname:</label>
             <label class="box-text" id="projectname">Unknown</label>
@@ -38,6 +39,7 @@
         <div class="header-item">
             <label class="box-text">Participant ID:</label>
             <label class="box-text" id="participantid">Unknown</label>
+            
         </div>
         <div class="header-item">
             <label class="box-text">Session number:</label>
@@ -85,6 +87,11 @@
     <div class="clear-float"></div>
 
     <script>
+        function favTutorial() {  
+            var mylist = document.getElementById("myList");  
+            document.getElementById("favourite").value = mylist.options[mylist.selectedIndex].text;  
+        }  
+
         const queryString = window.location.search;
         const urlParams = new URLSearchParams(queryString);
 
@@ -92,18 +99,22 @@
         if (urlParams.has('partid')){
             participantId = urlParams.get('partid');
         }
-        let directory = "/data/"+participantId+"/";
+        let sessionID = "S001";
+        let directory = "/data/"+participantId+"/"+sessionID+"/";
 
         let urls = {
             "video": "Participant View.mp4",
-            "answers": "Questionnaire/questionnaireID_Soni_participantID_id2_condition_AB_answers.json",
-//            "answers": "Questionnaire/questionnaireID_Soni_participantID_id2_condition_AB_answers.csv",
+            //"answers": "Questionnaire/questionnaireID_Soni_participantID_id2_condition_AB_answers.json",
+            "answers": "Questionnaire/questionnaireID_Soni_participantID_id2_condition_AB_answers.csv",
             "questions": "Questionnaire/sonification likert.json",
             "logs": "Minimap/minimap_log.json",
-            "participant_details": "S001/session_info/participant_details.csv",
-            "trial_results": "S001/trial_results.csv"
+            "participant_details": "session_info/participant_details.csv",
+            "trial_results": "complete_trial_results.csv"
         };
 
         console.log("Main script started for participant "+participantId); 
+
+
+
     </script>
 </body>

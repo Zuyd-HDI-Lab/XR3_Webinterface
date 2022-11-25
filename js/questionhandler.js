@@ -1,7 +1,6 @@
 class Questionnaire{
     constructor(rawQuestionData, rawAnswerData, trial_results) {
         this.trial_results = trial_results;
-        console.log(trial_results);
         //List of questions
         if (rawQuestionData == undefined || rawQuestionData.questions == undefined){
             this.questionObjects = undefined;
@@ -48,7 +47,6 @@ class Questionnaire{
 
         //Go through every timestamp in the answers
         this.answerObjects.forEach(element => {
-
             var cueStartTime = parseFloat((element.startTime - delay).toFixed(0));
             var cueEndTime = parseFloat((element.endTime - delay).toFixed(0));
             var interval = new TIMINGSRC.Interval(cueStartTime, cueEndTime);
