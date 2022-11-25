@@ -61,7 +61,8 @@
                 .append("td").append('input')
                 .attr("type","checkbox")
                 .attr("id", "downloadBox")
-                .attr("value", function(d){return this.parentNode.parentNode.id});
+                .attr("value", function(d){return this.parentNode.parentNode.id})
+                .attr("checked", "true");
 
             //Highlight selectedRow 
             let selectedParticipant = "002";              
