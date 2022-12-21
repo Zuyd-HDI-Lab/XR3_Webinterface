@@ -27,7 +27,7 @@
         <button id="btnDownloadSelected" type="button">Download Selected</button>
     </div>
     <script>
-        fileList = createFileList();
+        fileList = openCSVFiles(partlist);
         Promise.all(fileList)            
         .then(function (part_details) {
             var partInfoList = createPartInfo(part_details);
@@ -77,8 +77,17 @@
              
             document.querySelector('#btnAnalyse').addEventListener("click", () => { window.location.href="vr3.html?partid="+ selectedParticipant;});
 
-            document.querySelector('#btnDownloadAll').addEventListener("click", () => { console.log("TODO: Download all data");});
-            document.querySelector('#btnDownloadSelected').addEventListener("click", () => { console.log("TODO: Download selected data")});
+            document.querySelector('#btnDownloadAll').addEventListener("click", () => {
+                combinedFile = createCombinedFile(partlist); 
+                console.log("combinedFile ",combinedFile);
+                
+            });
+            document.querySelector('#btnDownloadSelected').addEventListener("click", () => { 
+                console.log("TODO: Download selected data");
+                //combinedFile = createCombinedFile(partlist);
+                //console.log("combinedFile ",combinedFile);
+                //window.open(combinedFile);
+            });
 
         }).catch(function (error) { console.log(error);});
     </script>
