@@ -25,6 +25,7 @@ tbody {
 .selectedRow{
     background-color: #8f1393ce;
     color: white;
+    border-radius: 5px;
 }
 
 #btnAnalyse{

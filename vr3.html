@@ -23,6 +23,7 @@
     
 
     <script type="text/javascript">
+        const url = new URL(window.location);
         //Start the 'run' function
         if (document.readyState === "complete") run();
         else window.onload = function () { run(); };
@@ -30,8 +31,8 @@
 </head>
 
 <body>
-    <div id="research-info">
-        <a href="index.html"><img id="home_button" src="/css/img/home_button.png"></a>
+    <div id="research-info">        
+        <a href="javascript:window.history.back()"><img id="home_button" src="/css/img/home_button.png"></a>
         <div class="header-item">
             <label class="box-text">Projectname:</label>
             <label class="box-text" id="projectname">Unknown</label>
