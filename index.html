@@ -27,6 +27,14 @@
         <button id="btnDownloadSelected" type="button">Download Selected</button>
     </div>
     <script>
+        var selectedParticipants = partlist;
+        let params = new URLSearchParams(window.location.search);
+        let sp_param = params.get('sp') 
+        if (sp_param != null){            
+            selectedParticipants = sp_param.split(',');
+        }
+        console.log(selectedParticipants)
+
         fileList = openCSVFiles(partlist);
         Promise.all(fileList)            
         .then(function (part_details) {
@@ -58,35 +66,53 @@
                 
            //Add checkboxes after last colomn
            d3.select("tbody").selectAll("tr")
-                .append("td").append('input')
+                .append("td").append("input")
                 .attr("type","checkbox")
                 .attr("id", "downloadBox")
                 .attr("value", function(d){return this.parentNode.parentNode.id})
-                .attr("checked", "true");
+                .attr("checked", function(d){
+                    console.log(this.parentNode.parentNode.id)
+                    console.log(selectedParticipants)
+                    if (selectedParticipants.indexOf(this.parentNode.parentNode.id) != -1){
+                        return "true";
+                    } 
+                    else return null;
+                });
 
             //Highlight selectedRow 
             let selectedParticipant = "002";              
             var tr = table.selectAll("tr")
                 .on("click", function(d) {
-                    if (d.path[0].id != "downloadBox"){
+                    console.log(d)
+                    console.log(d.srcElement.parentNode.id)
+                    if (d.srcElement.id != "downloadBox"){
                         tr.classed("selectedRow", false);
-                        d3.select(this).classed("selectedRow", true);
-                        selectedParticipant = d.path[1].id;
+                        d3.select(d.srcElement.parentNode).classed("selectedRow", true);
+                        selectedParticipant = d.srcElement.parentNode.id;
+                    }
+                    else{
+                        if (d.srcElement.checked){
+                            selectedParticipants.push(d.srcElement.parentNode.parentNode.id)
+                        }
+                        else{
+                            const index = selectedParticipants.indexOf(d.srcElement.parentNode.parentNode.id);
+                            if (index > -1) selectedParticipants.splice(index, 1);
+                        }
                     }
             });          
              
-            document.querySelector('#btnAnalyse').addEventListener("click", () => { window.location.href="vr3.html?partid="+ selectedParticipant;});
-
+            document.querySelector('#btnAnalyse').addEventListener("click", () => { 
+                const url = new URL(window.location);
+                url.searchParams.set('sp', selectedParticipants);
+                window.history.replaceState({}, '', url);
+                window.location.href="vr3.html?partid="+ selectedParticipant;
+            });
             document.querySelector('#btnDownloadAll').addEventListener("click", () => {
                 combinedFile = createCombinedFile(partlist); 
-                console.log("combinedFile ",combinedFile);
-                
             });
             document.querySelector('#btnDownloadSelected').addEventListener("click", () => { 
-                console.log("TODO: Download selected data");
-                //combinedFile = createCombinedFile(partlist);
-                //console.log("combinedFile ",combinedFile);
-                //window.open(combinedFile);
+                console.log("TODO: Download selected data for: ",selectedParticipants);
+                combinedFile = createCombinedFile(selectedParticipants); 
             });
 
         }).catch(function (error) { console.log(error);});
