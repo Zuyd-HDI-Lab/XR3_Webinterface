@@ -40,40 +40,40 @@
         .then(function (part_details) {
             var partInfoList = createPartInfo(part_details);
             
-            table = d3.select("#rb_partlist").append('table')
+            mainDiv = d3.select("#rb_partlist").append("div")
+                .attr("id", "mainDiv")
                 .style("border-collapse", "collapse")
                 .style("border", "2px black solid");
 
             // headers
-            table.append("thead").append("tr")
-                .selectAll("th")
+            mainDiv.append("div")
+                .attr("class", "partList_header")
+                .selectAll("label")
                 .data(partInfoList[0])
-                .enter().append("th")
-                .attr("class","partList_header")
+                .enter().append("label")
+                .attr("class","partList_header_lbl")
                 .text(function(d) { return d; })
 
             // data
-            table.append("tbody")
-                .selectAll("tr").data(partInfoList.slice(1))
-                .enter().append("tr")
+            mainDiv.selectAll(".participant_row")
+                .data(partInfoList.slice(1))
+                .enter().append("div")
+                .attr("class", "participant_row")
                 .attr("id", function(d){return d[1]})
-                .selectAll("td")
+                .selectAll("label")
                 .data(function(d){return d;})
-                .enter().append("td")
-                //.attr("name",function(d){return d})
-                .attr("class",function(d){return d})
+                .enter().append("label")
+                .attr("id",function(d){return d})
                 .text(function(d){return d })
                 
            //Add checkboxes after last colomn
-           d3.select("tbody").selectAll("tr")
-                .append("td").append("input")
+           d3.selectAll(".participant_row")
+                .append("input")
                 .attr("type","checkbox")
                 .attr("id", "downloadBox")
-                .attr("value", function(d){return this.parentNode.parentNode.id})
+                .attr("value", function(d){return this.parentNode.id})
                 .attr("checked", function(d){
-                    console.log(this.parentNode.parentNode.id)
-                    console.log(selectedParticipants)
-                    if (selectedParticipants.indexOf(this.parentNode.parentNode.id) != -1){
+                    if (selectedParticipants.indexOf(this.parentNode.id) != -1){
                         return "true";
                     } 
                     else return null;
@@ -81,21 +81,19 @@
 
             //Highlight selectedRow 
             let selectedParticipant = "002";              
-            var tr = table.selectAll("tr")
+            var selectedClick = mainDiv.selectAll(".participant_row")
                 .on("click", function(d) {
-                    console.log(d)
-                    console.log(d.srcElement.parentNode.id)
-                    if (d.srcElement.id != "downloadBox"){
-                        tr.classed("selectedRow", false);
+                    if (d.srcElement.id != "downloadBox" && d.srcElement.parentNode.id != "mainDiv"){
+                        selectedClick.classed("selectedRow", false);
                         d3.select(d.srcElement.parentNode).classed("selectedRow", true);
                         selectedParticipant = d.srcElement.parentNode.id;
                     }
                     else{
                         if (d.srcElement.checked){
-                            selectedParticipants.push(d.srcElement.parentNode.parentNode.id)
+                            selectedParticipants.push(d.srcElement.parentNode.id)
                         }
                         else{
-                            const index = selectedParticipants.indexOf(d.srcElement.parentNode.parentNode.id);
+                            const index = selectedParticipants.indexOf(d.srcElement.parentNode.id);
                             if (index > -1) selectedParticipants.splice(index, 1);
                         }
                     }
