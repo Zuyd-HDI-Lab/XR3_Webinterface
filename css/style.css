@@ -22,9 +22,17 @@ tbody {
     font-weight: bold;
 }
 
+.partList_header_lbl{
+    border: 1px black solid;
+    padding: 5px;
+    background-color: lightgray;
+    font-weight: bold;
+}
+
 .selectedRow{
     background-color: #8f1393ce;
     color: white;
+    border-radius: 5px;
 }
 
 #btnAnalyse{
