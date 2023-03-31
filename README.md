@@ -1,2 +1,2 @@
-# XR3_Webinterface
-XR3 Frontend
+# VR3_Webinterface
+VR3 Frontend

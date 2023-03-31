@@ -31,11 +31,12 @@ class ResearchSession {
     }
 
     //Update the timer and set slider to start if time is 0.00
-    timeUpdate() {
+    timeUpdate(video) {
         var rs = this;
         rs.timingObject.on("timeupdate", function () {
+
             rs.timeSec = rs.timingObject.query().position.toFixed(2);
-            rs.timeBox.innerHTML = rs.timeSec;
+            rs.timeBox.innerHTML = rs.timeSec+"/"+video.duration.toFixed(2);
 
             if (rs.timeSec == "0.00") {
                 rs.sliderProgress.style("width", 0);
@@ -58,16 +59,25 @@ class ResearchSession {
         this.minimapSequence = minimapSequence;
     }
 
+    
+    createAnswerHtml(){
+        console.log()
+    }
+    
     createAnswerCues(){
         let self = this;
         let answerSequence = new TIMINGSRC.Sequencer(this.timingObject);
         answerSequence = this.questionaire.createCues(answerSequence, this.delay);
-        
+
         if (answerSequence != undefined){
             answerSequence.on("change", function (e) {
+       
+                
+                //
                 var currentCue = answerSequence.getCue(e.key);
                 self.questionBox.innerHTML = currentCue.data[0].showQuestionAnswers(currentCue.data);
                 self.updateCircleStates(answerSequence.getCue(e.key));
+        
             });
             answerSequence.on("remove", function (e) {
                 self.questionBox.innerHTML = "";
@@ -95,6 +105,7 @@ class ResearchSession {
     }
 
     updateCircleStates(cue) {
+
         d3.selectAll(".question-marker").each(function (d) {
             let currentItem = d3.select(this);
             currentItem.classed("current", false);

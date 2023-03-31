@@ -33,16 +33,18 @@ class MinimapPlotter{
         var onEnter = mm_settings.selectAll("div")
             .data(this.objectList).enter().append("div").attr("id", function(d) { return "div"+ d;});
 
-        onEnter.append("input")
+        onEnter.append("label")
+            .attr("id", function(d) { return "lbl_mm_setting"+ d;})
+            .attr("value", function(d) { return d; })
+            .text(function(d) { return d; })   
+        .append("input")
             .attr("type","checkbox").attr("name", "minimap_object")
+            .attr("class", "custom-radio")
             .attr("id", function(d) { return "mm_setting"+ d;})
             .attr("value", function(d) { return d; })
             .attr("checked", "TRUE")
         
-        onEnter.append("label")
-            .attr("id", function(d) { return "lbl_mm_setting"+ d;})
-            .attr("value", function(d) { return d; })
-            .text(function(d) { return d; })                
+             
     }
 
     combineTrialResults(){
