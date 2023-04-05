@@ -11,16 +11,13 @@
 
     <link href="https://fonts.googleapis.com/css?family=Inconsolata|Roboto:400,700&display=swap" rel="stylesheet">
     <link href="css/style.css" rel="stylesheet">
-   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" />
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <script type="text/javascript" src="/data/participantlist.js"></script>
     <script type="text/javascript" src="/js/participantIndex.js"></script>
-
-        
 </head>
 
 <body>
-
     <div id="divPartSelection">
         <h1>Welcome Researcher</h1>
         <div id="rb_partlist">
@@ -31,19 +28,14 @@
         <button id="btnDownloadSelected" type="button">Download Selected</button>
     </div>
     <script>
-        function switchloader(condition){
-            switch(condition){
-                case 'off':
-                    d3.select('.loaderbox').style('display', 'none');
-                    break;
-                case'on':
-                    d3.select('.loaderbox').style('display', 'block');
-                    break;
-                default:
-                    console.log("Unknown switchloader-condition");
-            }
+        var selectedParticipants = partlist;
+        let params = new URLSearchParams(window.location.search);
+        let sp_param = params.get('sp') 
+        if (sp_param != null){            
+            selectedParticipants = sp_param.split(',');
+            console.log(selectedParticipants);
         }
-        switchloader('on')
+
         fileList = openCSVFiles(partlist);
         Promise.all(fileList)            
         .then(function (part_details) {
@@ -60,41 +52,69 @@
                 .enter().append("div")
                 .attr("class","partList_header")
                 .text(function(d) { return d; })
-
+            
             // data
             table.append("div").attr("class", "user_list")
                 .selectAll(".row").data(partInfoList.slice(1))
-                .enter().append("div")
-                .attr("class", "row")
-                .attr("id", function(d){return d[1]})
-                .append("span").attr("class", "material-symbols-outlined").html("arrow_circle_right")
+                    .enter().append("div")
+                    .attr("class", "row")
+                    .attr("id", function(d){return d[1]})
+                    .append("span").attr("class", "material-symbols-outlined").html("arrow_circle_right")
                 .selectAll("class")
-                .data(function(d){return d;})
-                .enter().append("div")
-                //.attr("name",function(d){return d})
-                .attr("class",function(d){return "_fields "+partInfoList[0]})
-                .text(function(d){return d })
+                    .data(function(d){return d;})
+                    .enter().append("div")
+                    //.attr("name",function(d){return d})
+                    .attr("class",function(d,i){return "_fields "+partInfoList[0][i].replace(" ","")})
+                    .text(function(d){return d })
                 
            //Add checkboxes after last colomn
-           d3.select(".user_list").selectAll(".rows")
+           d3.select(".user_list").selectAll(".row")
+           //d3.selectAll(".material-symbols-outlined")
                 .append("div").append('input')
                 .attr("type","checkbox")
                 .attr("id", "downloadBox")
                 .attr("value", function(d){return  this.parentNode.parentNode.id})
-                .attr("checked", "true");
+                .attr("checked", function(d){
+                    if (selectedParticipants.indexOf(this.parentNode.parentNode.id) != -1){
+                        return "true";
+                    } 
+                    else return null;
+                });
 
             //Highlight selectedRow 
             let selectedParticipant = "002";              
             var tr = table.selectAll(".row")
                 .on("click", function(d) {
-                    if (d.path[0].id != "downloadBox"){
-                        tr.classed("selectedRow", false);
-                        d3.select(this).classed("selectedRow", true);
-                        selectedParticipant = d.path[1].id;
+                    console.log(d)
+                    if (d.target.id == "downloadBox"){
+                        console.log(d.target)
+                        if (d.target.checked){
+                            selectedParticipants.push(d.target.value)
+                        }
+                        else{
+                            const index = selectedParticipants.indexOf(d.target.value);
+                            if (index > -1) selectedParticipants.splice(index, 1);
+                        }
+                        console.log("selectedParticipants",selectedParticipants)
                     }
-            });          
+                    else{
+                        if (d.target.className == "row"){
+                            tr.classed("selectedRow", false);
+                            d3.select(this).classed("selectedRow", true);
+                            selectedParticipant = d.target.id;
+                            console.log("selectedParticipant ",selectedParticipant)
+                        }
+                    }
+            });
+            console.log(tr)          
              
-            document.querySelector('#btnAnalyse').addEventListener("click", () => { window.location.href="vr3.html?partid="+ selectedParticipant;});
+            document.querySelector('#btnAnalyse').addEventListener("click", () => { 
+                //window.location.href="vr3.html?partid="+ selectedParticipant;});
+                const url = new URL(window.location);
+                url.searchParams.set('sp', selectedParticipants);
+                window.history.replaceState({}, '', url);
+                window.location.href="vr3.html?partid="+ selectedParticipant;
+            });
 
             document.querySelector('#btnDownloadAll').addEventListener("click", () => {
                 combinedFile = createCombinedFile(partlist); 
@@ -102,7 +122,8 @@
                 
             });
             document.querySelector('#btnDownloadSelected').addEventListener("click", () => { 
-                console.log("TODO: Download selected data");
+                console.log("TODO: Download selected data for: ",selectedParticipants);
+                combinedFile = createCombinedFile(selectedParticipants);
                 //combinedFile = createCombinedFile(partlist);
                 //console.log("combinedFile ",combinedFile);
                 //window.open(combinedFile);

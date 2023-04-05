@@ -322,6 +322,7 @@ h1{
 
 .material-symbols-outlined {
     float:left;
+    width: 80%;
 }
 tbody {
     font-size: 12px;
@@ -341,6 +342,7 @@ tbody {
     border-bottom-color: grey;
     border-bottom-width: 1pt;
     padding-left: 30px;
+    height: 15px;
 }
 
 .selectedRow{
