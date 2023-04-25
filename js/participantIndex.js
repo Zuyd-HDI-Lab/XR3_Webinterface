@@ -42,11 +42,11 @@ const createCombinedFile = function(partIDList){
     var outputStr = ""
 
     var fileList = openCSVFiles(partIDList);
-    console.log(fileList)
+    //console.log(fileList)
     Promise.all(fileList/*.map(d3.csv)*/).then(function(files) {
-        console.log(files)
+        //console.log(files)
         files.forEach(element => {
-            console.log("File: ", element)
+            //console.log("File: ", element)
             combinedData = combinedData.concat(element);
         });
         //console.log("CombinedData: ", combinedData)
@@ -92,7 +92,7 @@ const csvmaker = function(data, includeHeader=false) {
 }
 
 const downloadCSV = function (data) {
-    console.log("download ", data)
+    //console.log("download ", data)
     // Creating a Blob for having a csv file format
     // and passing the data with type
     const blob = new Blob([data], { type: 'text/csv' });

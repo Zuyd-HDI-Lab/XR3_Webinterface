@@ -50,14 +50,14 @@ window.dragMoveListener = dragMoveListener
 console.log("interact helper loaded...")
 
 function switchloader(condition){
-  switch(condition){
-      case 'off':
-          d3.select('.loaderbox').style('display', 'none');
-          break;
-      case'on':
-          d3.select('.loaderbox').style('display', 'block');
-          break;
-      default:
-          console.log("Unknown switchloader-condition");
-  }
+switch(condition){
+case 'off':
+  d3.select('.loaderbox').style('display', 'none');
+  break;
+case'on':
+   d3.select('.loaderbox').style('display', 'block');
+  break;
+default:
+}
+
 }
