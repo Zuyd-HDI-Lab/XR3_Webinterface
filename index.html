@@ -1,5 +1,3 @@
-<!-- Version: 18:33 29-10-2020 -->
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -14,17 +12,30 @@
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <script type="text/javascript" src="/data/participantlist.js"></script>
     <script type="text/javascript" src="/js/participantIndex.js"></script>
+    <style>
+        button {
+    background: #f1a245;
+    border: none;
+    padding: 8px;
+    padding-left: 15px;
+    font-weight: 900;
+    padding-right: 15px;
+    color: white;
+        } </style>
+</script>
 </head>
 
 <body>
     <div id="divPartSelection">
-        <h1>Welcome Researcher</h1>
+        <h1>  </h1>
         <div id="rb_partlist">
-            <p>Select participant:</p>
+            <p style="text-align: center">Select participant:</p>
         </div>
+    <div id="btn_field">
         <button id="btnAnalyse" type="button">Analyse</button>
         <button id="btnDownloadAll" type="button">Download All</button>
         <button id="btnDownloadSelected" type="button">Download Selected</button>
+        </div>
     </div>
     <script>
         var selectedParticipants = partlist;
@@ -42,8 +53,8 @@
             
             mainDiv = d3.select("#rb_partlist").append("div")
                 .attr("id", "mainDiv")
-                .style("border-collapse", "collapse")
-                .style("border", "2px black solid");
+                .style("border-collapse", "collapse");
+                //.style("border", "2px black solid");
 
             // headers
             mainDiv.append("div")
@@ -51,7 +62,7 @@
                 .selectAll("label")
                 .data(partInfoList[0])
                 .enter().append("label")
-                .attr("class","partList_header_lbl")
+                .attr("class",function(d, i){return "partList_header_lbl_"+ i})
                 .text(function(d) { return d; })
 
             // data
@@ -59,44 +70,58 @@
                 .data(partInfoList.slice(1))
                 .enter().append("div")
                 .attr("class", "participant_row")
-                .attr("id", function(d){return d[1]})
+                .attr("id",  function(d, i){return d[1]})
                 .selectAll("label")
                 .data(function(d){return d;})
                 .enter().append("label")
-                .attr("id",function(d){return d})
+                .attr("class",function(d, i){return "col_"+ i})
                 .text(function(d){return d })
-                
+          
+//            <label class="container">One
+//               <input type="checkbox" checked="checked">
+//              <span class="checkmark"></span>
+//             </label>       
+            
            //Add checkboxes after last colomn
-           d3.selectAll(".participant_row")
-                .append("input")
-                .attr("type","checkbox")
-                .attr("id", "downloadBox")
-                .attr("value", function(d){return this.parentNode.id})
-                .attr("checked", function(d){
-                    if (selectedParticipants.indexOf(this.parentNode.id) != -1){
-                        return "true";
-                    } 
-                    else return null;
-                });
+           d3.selectAll(".participant_row").append("label")
+                        .attr("class","container")
+                .each(function(d) {
+                    d3.select(this) 
+                        .append("input")
+                        .attr("type","checkbox")
+                        .attr("id", "downloadBox")
+                        .attr("value", function(d){return this.parentNode.parentNode.id})
+                        .attr("checked", function(d){
+                            if (selectedParticipants.indexOf(this.parentNode.parentNode.id) != -1){return "true";} 
+                            else return null;
+                        })
+                     d3.select(this).append("span")
+                        .attr("class", "checkmark")
+           });
 
             //Highlight selectedRow 
             let selectedParticipant = "002";              
             var selectedClick = mainDiv.selectAll(".participant_row")
                 .on("click", function(d) {
-                    if (d.srcElement.id != "downloadBox" && d.srcElement.parentNode.id != "mainDiv"){
+                    if(d.srcElement.id != "downloadBox" && !d.srcElement.classList.contains("checkmark") && d.srcElement.parentNode.id != "mainDiv"){
                         selectedClick.classed("selectedRow", false);
                         d3.select(d.srcElement.parentNode).classed("selectedRow", true);
                         selectedParticipant = d.srcElement.parentNode.id;
                     }
-                    else{
+                    else if (d.srcElement.classList.contains("participant_row")){
+                            selectedClick.classed("selectedRow", false);
+                            d3.select(d.srcElement).classed("selectedRow", true);
+                            selectedParticipant = d.srcElement.id;
+                    }
+                    else if (d.srcElement.id == "downloadBox" ){
                         if (d.srcElement.checked){
-                            selectedParticipants.push(d.srcElement.parentNode.id)
+                            selectedParticipants.push(d.srcElement.parentNode.parentNode.id)
                         }
                         else{
-                            const index = selectedParticipants.indexOf(d.srcElement.parentNode.id);
+                            const index = selectedParticipants.indexOf(d.srcElement.parentNode.parentNode.id);
                             if (index > -1) selectedParticipants.splice(index, 1);
                         }
-                    }
+                    }                                        
             });          
              
             document.querySelector('#btnAnalyse').addEventListener("click", () => { 

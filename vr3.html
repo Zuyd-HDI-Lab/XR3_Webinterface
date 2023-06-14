@@ -10,8 +10,13 @@
     <title>VR Research Reporter - Analyse</title>
 
     <link href="https://fonts.googleapis.com/css?family=Inconsolata|Roboto:400,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+
     <link href="css/style.css" rel="stylesheet">
 
+<script src="https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js"></script>
+    
+    
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <script src="/js/external/mediasync.js"></script>
     <script src="/js/external/timingsrc-v2.js"></script>
@@ -19,7 +24,10 @@
     <script src="/js/questionhandler.js"></script>
     <script src="/js/minimapplotter.js"></script>
     <script src="/js/main.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+    <script src="/js/helper.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+    
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
     
 
     <script type="text/javascript">
@@ -31,25 +39,32 @@
 </head>
 
 <body>
-    <div id="research-info">        
-        <a href="javascript:window.history.back()"><img id="home_button" src="/css/img/home_button.png"></a>
+    <div class="loaderbox">
+    <div class="loader"></div>
+</div>
+
+    <div id="research-info">
+        <a href="javascript:window.history.back()"><img id="home_button" src="/css/img/home_button.png"><span class="material-symbols-outlined openfile">
+folder_open
+</span></a>
         <div class="header-item">
             <label class="box-text">Projectname:</label>
-            <label class="box-text" id="projectname">Unknown</label>
+            <label class="box-text title_field" id="projectname">Unknown</label>
         </div>
         <div class="header-item">
             <label class="box-text">Participant ID:</label>
-            <label class="box-text" id="participantid">Unknown</label>
+            <label class="box-text title_field" id="participantid">Unknown</label>
             
         </div>
         <div class="header-item">
             <label class="box-text">Session number:</label>
-            <label class="box-text" id="sessionnumber">Unknown</label>
+            <label class="box-text title_field" id="sessionnumber">Unknown</label>
         </div>
     </div>
     <div id="output_container">
+        <div id="minimap-settings" class="draggable"></div>
         <div id="video-panel">
-            <h1>Video</h1>
+            <h1>User view</h1>
             <!--DEBUGMODE Volume off-->
             <video id="video-feed"><!--onloadstart="this.volume=0.0">-->
                 Your browser does not support HTML5 video.
@@ -58,36 +73,44 @@
                 <source id="audio-mp3-source" type="audio/mpeg" />
                 Your browser does not support HTML audio.
             </audio>
-            <p id="video_time">0.00</p>
-            <p id="vid-timing"></p>
+
         </div>
         <div id="analyse-window">
             <div id="minimap-parent">
-                <h1>Minimap</h1>
+                <h1>Object Positions</h1>
                 <div id="minimap-canvas"></div>
-                <div id="minimap-settings"></div>
+                
             </div>
         </div>
+        
+    <div id="controlls_container">
+        <div id="button_panel">
+            <button class="btn_control" id="btn_replay"><span class="material-symbols-outlined">replay</span></button>
+            <button class="btn_control" id="btn_previouscue"><span class="material-symbols-outlined">skip_previous</span></button>
+            <button class="btn_control" id="btn_pause"><span class="material-symbols-outlined">pause</span></button>
+            <button class="btn_control" id="btn_play"><span class="material-symbols-outlined">play_arrow</span></button>
+            <button class="btn_control" id="btn_nextcue"><span class="material-symbols-outlined">skip_next</span></button>
+        </div>
+        
+        <div id="timecode">
+            <p id="video_time">0.00</p>
+           <!----  <p id="vid-timing"></p> --->
+        </div>
+    </div>
+        <div id="slider_controls"><span class="label_events">Data Collection Events</span></div>
+        
         <div id="question-parent">
             <h1>Answers</h1>
+            <div id="timing_icn"><span class="material-symbols-outlined">timer</span></div>
             <div id="question-timing"></div>
             <div id="answer-timing"></div>
         </div>
     </div>
 
-    <div id="controlls_container">
-        <div id="button_panel">
-            <button class="btn_control" id="btn_replay"></button>
-            <button class="btn_control" id="btn_previouscue"> </button>
-            <button class="btn_control" id="btn_pause"></button>
-            <button class="btn_control" id="btn_play"></button>
-            <button class="btn_control" id="btn_nextcue"></button>
-        </div>
-        <div id="slider_controls"></div>
-    </div>
     <div class="clear-float"></div>
 
     <script>
+        switchloader('on');
         function favTutorial() {  
             var mylist = document.getElementById("myList");  
             document.getElementById("favourite").value = mylist.options[mylist.selectedIndex].text;  

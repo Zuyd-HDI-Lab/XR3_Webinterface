@@ -197,24 +197,37 @@ class AnwserData{
 
     showQuestionAnswers(cueAnswers){
         var completionTime = parseFloat(cueAnswers[0].endTime - cueAnswers[0].startTime).toFixed(2);
-        var answerString = "<small>Completion time: " + completionTime +"</small></br></br>";
+        var answerString = "<div><span id='timeTitle'>Completion time:</span><span id='dynTime'>" + completionTime +"</span></div></br>";
         switch(this.questionType){
         case "task":
+                                answerString +=  "<div class='talk-bubble tri-right btm-right'><div class='talktext'><p>"+this.pageObject.questions[this.questionId].qText+"</p></div>"
             //answerString = this.pageObject.qInstructions + "</br><br>"; 
             //answerString += this.questionText;           
             break;
         case "numericInput":
-            answerString += this.questionText +"</br>"+ this.answer;
+            answerString += "<div class='talk-bubble tri-right btm-right'><div class='talktext'><p>"+this.questionText +"</p></div></div></br><div class='talk-bubble tri-right btm-left'>"+this.answer+"</div>";
             break;
         case "radio":
         case "dropdown":
             //answerString = "";
+
             for (var key in cueAnswers){
-                answerString += cueAnswers[key].getSingleAnswer() +"</br></br>";
+               console.log("answer string "+answerString)
+                var answer = cueAnswers[key].getSingleAnswer();
+                answer =  answer.split("</br>").pop();
+                
+                console.log("? "+this.pageObject.questions[this.questionId].qText);
+                console.log("! "+answer);
+                
+                answerString +=  "<div class='talk-bubble tri-right btm-right'><div class='talktext'><p>"+this.pageObject.questions[this.questionId].qText+"</p></div></div><div class='talk-bubble tri-right btm-left'>"+answer +"</br></br></div>";
             }
+               
+
+               // console.log("! "+answer)
+                
             break;
         case "likert":
-            answerString += this.questionText +"</br>"; 
+            answerString += "<div class='talk-bubble tri-right btm-right'><div class='talktext'><p>"+this.questionText+"</p></div></div></br>"; 
             for (var key in this.pageObject.qConditions){
                 if (this.pageObject.qConditions[key].qId === this.cId){                    
                     answerString += this.pageObject.qConditions[key].qText +"</br></br>";
@@ -225,13 +238,13 @@ class AnwserData{
             }
             break;
         case "radioGrid":
-            answerString += this.pageObject.questions[this.questionId].qText +"</br></br>";
+            answerString += "<div class='talk-bubble tri-right btm-right'><div class='talktext'><p>"+this.pageObject.questions[this.questionId].qText+"</p></div></div></br>";
             for (var key in cueAnswers){
                 answerString += cueAnswers[key].getSingleAnswer() +"</br></br>";
             }
             break;
         case "checkbox": 
-            answerString += this.pageObject.questions[this.questionId].qText +"</br></br>";
+            answerString += "<div class='talk-bubble tri-right btm-right'><div class='talktext'><p>"+this.pageObject.questions[this.questionId].qText +"</p></div></div></br>";
             answerString += "<table>";            
             for (var key in cueAnswers){
                 answerString += cueAnswers[key].getSingleAnswer();
@@ -239,11 +252,14 @@ class AnwserData{
             answerString += "</table>"
             break;
         case "linearSlider":
+                                answerString +=  "<div class='talk-bubble tri-right btm-right'><div class='talktext'><p>"+this.pageObject.questions[this.questionId].qText+"</p></div></div>"
+                console.log("LinearSlider "+answerString);
         case "linearGrid": 
             //answerString = "";
             for (var key in cueAnswers){
-                answerString += cueAnswers[key].getSingleAnswer();
+                answerString += +cueAnswers[key].getSingleAnswer();
             }
+                 console.log("linearGrid "+answerString);
             break;
         default:
             console.log("default markup.. TODO");

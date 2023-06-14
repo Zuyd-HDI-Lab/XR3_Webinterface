@@ -36,16 +36,20 @@ function createPartInfo(part_details){
 }
 
 const createCombinedFile = function(partIDList){
+//    var file1 = "/data/001/S001/complete_trial_results.csv";
+//    var file2 = "/data/002/S001/complete_trial_results.csv";;
     var combinedData = [];
     var outputStr = ""
 
     var fileList = openCSVFiles(partIDList);
-    console.log(partIDList)
+    //console.log(fileList)
     Promise.all(fileList/*.map(d3.csv)*/).then(function(files) {
-        console.log(files)
+        //console.log(files)
         files.forEach(element => {
+            //console.log("File: ", element)
             combinedData = combinedData.concat(element);
         });
+        //console.log("CombinedData: ", combinedData)
         
         var output = [];
         combinedData.forEach(element => {
@@ -53,6 +57,7 @@ const createCombinedFile = function(partIDList){
         });
         
         outputStr = output.join("\n")
+        //var output = csvmaker(fileData3)
         return downloadCSV(outputStr);
 
     }).catch(function(err) {
@@ -88,7 +93,8 @@ const csvmaker = function(data, includeHeader=false) {
 
 const downloadCSV = function (data) {
     //console.log("download ", data)
-    // Creating a Blob for having a csv file format and passing the data with type
+    // Creating a Blob for having a csv file format
+    // and passing the data with type
     const blob = new Blob([data], { type: 'text/csv' });
     // Creating an object for downloading url
     const url = window.URL.createObjectURL(blob)
@@ -99,9 +105,24 @@ const downloadCSV = function (data) {
     // Passing the blob downloading url
     a.setAttribute('href', url)
  
-    // Setting the anchor tag attribute for downloading and passing the download file name
+    // Setting the anchor tag attribute for downloading
+    // and passing the download file name
     a.setAttribute('download', 'download.csv');
  
     // Performing a download with click
     a.click()
 }
+
+/*
+const get = async function () {
+ 
+    // JavaScript object
+    const data = {
+        id: 1,
+        name: "Geeks",
+        profession: "developer"
+    }
+ 
+    const csvdata = csvmaker(data);
+    download(csvdata);
+}*/

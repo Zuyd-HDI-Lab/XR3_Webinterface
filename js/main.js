@@ -15,6 +15,7 @@ var run = function () {
 
         object.load();
         object.onloadedmetadata = function () {
+            switchloader("off");
             resolve(object);
         }
     });}
@@ -50,7 +51,7 @@ var run = function () {
                 setupSlider(researchSession, 8, 4);                
 
                 // Finish by calling timeUpdate once
-                researchSession.timeUpdate();                
+                researchSession.timeUpdate(video);                
             });        
         }).catch(function (error) { console.log("Trial data not available");});
         }).catch(function (error) { console.log("Participant details not available");});    
@@ -165,10 +166,11 @@ var run = function () {
                 .enter()
                 .append("div")
                 .attr("class", "question-marker")
+                .html(function (d, i) { return i;})
                 .style("position", "absolute")
                 .style("display", "block")
                 .style("left", function (d) {
-                    return (x(d.interval.low) - 9) + "px";
+                    return ((x(d.interval.low) - 9)-8) + "px";
                 })
                 .attr("id", function (d) { return "t_" + d.key.replace('.', 'p'); })
                 .attr("time", function (d) { return d.key; })
@@ -199,6 +201,7 @@ var run = function () {
             .attr("id", "slider-progress")
             .style("position", "relative")
             .style("display", "block")
+        
             .on("mouseover", function (d) {
                 if (!d3.select(this).classed("progress-hover")) {
                     d3.select(this).classed("progress-hover", true)
